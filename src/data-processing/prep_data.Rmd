@@ -1,0 +1,37 @@
+---
+title: 'Prepare Data'
+author: "Dirck de Kleer & Mariken A.C.G. van der Velden"
+output: 
+  github_document:
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(printr)
+library(rmarkdown)
+```
+
+# Scripts
+- [Required Packages &amp; Reproducibility](#required-packages-&amp;-reproducibility)
+- [Tidy Data](#tidy-data)
+- [Missing Values](#missing-values)
+- [Save Data for Analysis](#save-data-for-analysis)
+- [Visualization of Data](#visualization-of-data)
+  - [Dependent Variable](#dependent-variable)
+  - [Independent Variable](#independent-variable)
+  - [Control Variables](#control-variables)
+  - [Correlations Matrix](#correlations-matrix)
+
+## Required Packages &amp; Reproducibility
+```{r, message=FALSE, warning=F}
+rm(list=ls())
+
+renv::snapshot()
+
+source("../lib/functions.R")
+```
+
+## Tidy Data
