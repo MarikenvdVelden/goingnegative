@@ -12,7 +12,7 @@ Of interest might be:
 
 * [reshape_data.Rmd](src/data-processing/eshape_data.md) ADD
 
-# Data
+## Data
 
 The following data files might be of interest:
 
@@ -20,11 +20,11 @@ The following data files might be of interest:
 
 See the files in [src/data-processing](src/data-processing/README.md) for details on how these files were constructed.
 
-# Results as presented in the paper
+## Results as presented in the paper
 
 * [Performance, learning curve, correlations](src/analysis/performance.md)
 
-# Supplementary Results
+## Supplementary Results
 
 * [Confusion Matrices of all methods](src/analysis/confusion_matrix.md)
 * [Grid Search for CNN](src/analysis/cnn_gridsearch.md) (code: [30_cnn_gridsearch.py](src/data-processing/30_cnn_gridsearch.py)
