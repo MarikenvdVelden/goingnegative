@@ -10,13 +10,15 @@ View the [draft of the paper here](report/draft.pdf).
 The main analysis code is located in the [src/data-processing](src/data-processing/README.md). 
 Of interest might be:
 
-* [reshape_data.Rmd](src/data-processing/eshape_data.md) ADD
+* [prep_data.Rmd](src/data-processing/prep_data.md) Combine manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) 
 
 ## Data
 
 The following data files might be of interest:
 
-* [metadata.csv](data/intermediate/metadata.csv) Headline, date, and source of each article
+* [coded-data-NL-2017-campaign.csv](data/raw/coded-data-NL-2017-campaign.csv)
+* [cleaned_data.RData](data/intermediate/cleaned_data.RData) 
+* [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx)
 
 See the files in [src/data-processing](src/data-processing/README.md) for details on how these files were constructed.
 
