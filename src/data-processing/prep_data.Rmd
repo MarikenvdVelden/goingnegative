@@ -38,47 +38,69 @@ Load manually annotated data - for a validation excercise see [here](../../n) - 
 ```{r}
 d <- read_csv("../../data/raw/coded-data-NL-2017-campaign.csv") %>%
   mutate(in_opposition = ifelse(party == "VVD", 0,
-                      ifelse(party == "PvdA", 0, 1)),
+                         ifelse(party == "PvdA", 0, 1)),
          new_party = ifelse(party == "FvD", 1, 0),
          journalistic_intervenience = ifelse(medium=="Facebook", 0,
-                                      ifelse(medium=="Newspapers", 1, 0.5)))
+                                      ifelse(medium=="Newspapers", 1, 0.5)),
+         id = paste(date, party, sep = "."))
 ```
 
 ### Ideological Extremity: CHES and Manifesto Project
 We have four ways to measure ideological extremity. 
 We look at party's deviation from (a) the median party, and (b) the mean party, as measured by the [2017 Chapel Hill Expert Survey](https://www.chesdata.eu/2017-chapel-hill-expert-survey) and the [Manifesto Project](https://manifesto-project.wzb.eu/).
 
-We first add the [2017 Chapel Hill Expert Survey](https://www.chesdata.eu/s/CHES_means_2017.csv) to our manually annotated data `d` to calculate party's ideological extremity as well as to add the seat share of the party in the national elections most prior to 2017.
+We first add the [2017 Chapel Hill Expert Survey](https://www.chesdata.eu/s/CHES_means_2017.csv) to our manually annotated data `d` to calculate party's ideological extremity for the 2017 (`ie_mean_ches2017` and `ie_median_ches2017`), and 2012 election campaigns (`ie_mean_ches2014` and `ie_median_ches2014`).
+
 
 ```{r}
 ches <- read_csv("https://www.chesdata.eu/s/CHES_means_2017.csv") %>%
   filter(country == "nl") %>%
-  select(party = party, rile_ches = lrgen, seats = seat) %>%
-  mutate(ideological_extremity_ches1 = abs(rile_ches - median(rile_ches)),
-         ideological_extremity_ches2 = abs(rile_ches - mean(rile_ches))) %>%
+  select(party = party, rile_ches = lrgen) %>%
+  mutate(ie_median_ches2017 = abs(rile_ches - median(rile_ches)),
+         ie_mean_ches2017 = abs(rile_ches - mean(rile_ches))) %>%
+  select(-rile_ches)
+
+d <- left_join(d, ches, by = "party")
+rm(ches)
+
+ches <- read_csv("https://www.chesdata.eu/s/2014_CHES_dataset_means.csv") %>%
+  filter(cname == "net") %>%
+  select(party = party_name, rile_ches = lrgen) %>%
+  mutate(ie_median_ches2014 = abs(rile_ches - median(rile_ches)),
+         ie_mean_ches2014 = abs(rile_ches - mean(rile_ches))) %>%
   select(-rile_ches)
 
 d <- left_join(d, ches, by = "party")
 rm(ches)
 ```
 
-Second, we added data from the [Manifesto Project](https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv) to our manually annotated data `d` to calculate party's ideological extremity.
+Second, we added data from the [Manifesto Project](https://manifesto-project.wzb.eu) to our manually annotated data `d` to calculate party's ideological extremity based on the 2017 (`ie_mean_cmp2017` and `ie_median_cmp2017`), and 2012 election manifesto's (`ie_mean_cmp2012` and `ie_median_cmp2012`) as well as to add the seat share of the party in the national elections most prior to 2017 (`seats`).
 
 ```{r}
 cmp <- read_csv("https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv") %>%
   filter(countryname == "Netherlands", date == "201703") %>%
-  mutate(ideological_extremity_cmp1 = abs(rile - median(rile)),
-         ideological_extremity_cmp2 = abs(rile - mean(rile))) %>%
-  select(cmp_code = party,ideological_extremity_cmp1,
-         ideological_extremity_cmp2)
-
+  mutate(ie_mean_cmp2017 = abs(rile - median(rile)),
+         ie_median_cmp2017 = abs(rile - mean(rile))) %>%
+  select(cmp_code = party,ie_mean_cmp2017,
+         ie_median_cmp2017)
 d <- left_join(d, cmp, by = "cmp_code")
+rm(cmp)
+
+cmp <- read_csv("https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv") %>%
+  filter(countryname == "Netherlands", date == "201209") %>%
+  mutate(ie_mean_cmp2012 = abs(rile - median(rile)),
+         ie_median_cmp2012 = abs(rile - mean(rile))) %>%
+  select(cmp_code = party, ie_mean_cmp2012,
+         ie_median_cmp2012, seats = absseat)
+
+d <- left_join(d, cmp, by = "cmp_code") %>%
+  drop_na(date)
 rm(cmp)
 ```
 
 ### Standing in the Polls
 Subsequently, we add [polling data](https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen) to our manually annotated data.
-We use the (a) mean and (b) median value of the polls averaged over the different polling houses between February 15th 2017 and March 14th 2017.
+We calculate the relative gains (or losses) based on: a) polled seats vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing1`),  b) lagged polled seats by 1 day vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing2`), c) lagged polled seats by 1 week vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing3`), d) polled seats vis-a-vis lagged polled seats by 1 day (`poll_standing4`), e) polled seats vis-a-vis lagged polled seats by 1 week (`poll_standing5`), f) lagged polled seats by 1 day vis-a-vis lagged polled seats by 1 week (`poll_standing6`).
 
 ```{r}
 polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#Peilingresultaten" %>%
@@ -89,27 +111,100 @@ polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#
 polls <- do.call(rbind.data.frame, polls) %>%
   tibble() %>%
   filter(Datum > "14 februari 2017") %>%
+  mutate(Datum = recode(Datum,
+                        `14 maart 2017` = "14-03-2017",
+                        `15 februari 2017` = "15-02-2017",
+                        `15 maart 2017` = "15-03-2017",
+                        `16 februari 2017` = "16-02-2017",
+                        `17 februari 2017` = "17-02-2017",
+                        `18 februari 2017` = "18-02-2017",
+                        `19 februari 2017` = "19-02-2017",
+                        `2 februari 2017` = "02-02-2017",
+                        `2 maart 2017` = "02-03-2017",
+                        `20 februari 2017` = "20-02-2017",
+                        `21 februari 2017` = "21-02-2017",
+                        `22 februari 2017` = "22-02-2017",
+                        `23 februari 2017` = "23-02-2017",
+                        `24 februari 2017` = "24-02-2017",
+                        `25 februari 2017` = "25-02-2017",
+                        `26 februari 2017` = "26-02-2017",
+                        `27 februari 2017` = "27-02-2017",
+                        `28 februari 2017` = "28-02-2017",
+                        `3 februari 2017` = "03-02-2017",
+                        `3 maart 2017` = "03-03-2017",
+                        `4 februari 2017` = "04-02-2017",
+                        `4 maart 2017` = "04-03-2017",
+                        `5 februari 2017` = "05-02-2017",
+                        `5 maart 2017` = "05-03-2017",
+                        `6 februari 2017` = "06-02-2017",
+                        `6 maart 2017` = "06-03-2017",
+                        `7 februari 2017` = "07-02-2017",
+                        `7 maart 2017` = "07-03-2017",
+                        `8 februari 2017` = "08-02-2017",
+                        `8 maart 2017` = "08-03-2017",
+                        `9 februari 2017` = "03-02-2017",
+                        `9 maart 2017` = "03-03-2017"),
+         Datum = as.Date(Datum, format = "%d-%m-%Y")) %>%
+  filter(Datum > "2017-02-14",
+         Datum < "2017-03-15") %>%
   pivot_longer(cols = c(VVD:FvD),
                names_to = "party",
                values_to = "polls") %>%
-  select(party, polls) %>%
+  select(date = Datum, party, polls) %>%
   filter(party != "Denk") %>%
-  group_by(party) %>%
-  summarise(mean_polls = mean(polls),
-            median_polls = median(polls)) %>%
-  ungroup()
+  mutate(party = recode(party,
+                        `50+` = "50PLUS")) %>%
+  filter(party != "VNL")
 
-d <- left_join(d, polls, by = "party") %>%
-  mutate(polls_standing_mean = round(mean_polls/ seats,2),
-         polls_standing_median = round(median_polls/seats, 2))
+polls <- polls %>%
+  add_case(date = rep(as.Date("2017-03-01"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(26, 13, 22, 16, 16, 18, 6, 17, 2, 6, 6, 0))  %>%
+  add_case(date = rep(as.Date("2017-03-09"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-10"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-11"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-12"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-13"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1))  %>%
+  mutate(id = paste(date, party, sep = ".")) %>%
+  arrange(date) %>%
+  group_by(party) %>%
+  mutate(l_polls = lag(polls),
+         l_polls_week = lag(polls, n =7)) %>%
+  ungroup() %>%
+  select(id, polls, l_polls, l_polls_week)
+
+d <- left_join(d, polls, by = "id") %>%
+  mutate(seats = ifelse(party=="FvD", 0, seats),
+         poll_standing1 = round(polls/seats,2),
+         poll_standing2 = round(l_polls/seats,2),
+         poll_standing3 = round(l_polls_week/seats,2),
+         poll_standing4 = round(polls/l_polls, 2),
+         poll_standing5 = round(polls/l_polls_week, 2),
+         poll_standing6 = round(l_polls/l_polls_week, 2))
+
 rm(polls)
 ```
 
-### Associative and Competence Issue Ownership
+### Associative Issue Ownership
 We use the October 2016 panel wave of KiesKompas to measure associative and competence issue ownership.
 We measure associative issue ownership with the question _Which issue comes to your mind when you think about <party>?_.
-We measure competence issue ownership with the question _do you agree or disagree with <party> on the issue you associated with the party?_.
-For each question, the respective issue ownership variables will be measured by summation over the respondents.
+For each question, associative issue ownership variables will be measured by summation over the respondents and calculating in percentages how many of the respondents associate an issue with a party.
 
 ```{r}
 aio <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
@@ -179,8 +274,13 @@ d <- left_join(d, aio, by = "id")
 rm(aio, associate_io)
 ```
 
-```{r}
+# Competence Issue Ownership
+We use the October 2016 panel wave of KiesKompas to measure competence issue ownership.
+We measure competence issue ownership with the question _do you agree or disagree with <party> on the issue you associated with the party?_.
+For each question, the compentence issue ownership variables will be measured by summation over the respondents.
+Negative figures imply that more people disagree with the position of the party than people have agreed with the position of the party.
 
+```{r}
 data <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
   zap_labels()
 
@@ -291,7 +391,7 @@ for(i in 1:19){
                         issue = i, party = "SGP"))}
 }
 cio <- rbind(cio, sgp)
-rm(sgp, data, io)
+rm(sgp, data, i)
 
 cio <- cio %>%
   mutate(issue = recode(issue,
@@ -330,3 +430,212 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ## Visualization of Data
 
+### Dependent Variable
+```{r, echo=F}
+d %>%
+  select(direction_appeal, party) %>%
+  group_by(direction_appeal, party) %>%
+  summarise(n = n(),
+            perc = n/dim(d)[1]) %>%
+  ggplot(mapping = aes(x = party, y = perc, fill = direction_appeal)) +
+  geom_col(alpha = .8, position = position_dodge()) +
+  labs(y = "", x = "", title = "Appeals made by Parties") +
+  theme_minimal() +
+  scale_y_continuous(labels=percent) +
+  scale_fill_viridis(option = "magma", discrete = T) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank()) 
+```
+
+### Independent Variable
+```{r, echo=F, message=FALSE, warning=FALSE}
+d %>%
+  select(journalistic_intervenience,party) %>%
+  group_by(journalistic_intervenience, party) %>%
+  summarise(n = n(),
+            perc = n/dim(d)[1]) %>%
+  mutate(journalistic_intervenience = recode(journalistic_intervenience,
+         `0` = "No Journalistic Intervenience (Facebook)",
+         `0.5` = "Medium Journalistic Intervenience (TV-shows)",
+         `1` = "Strong Journalistic Intervenience (Newspapers)"),
+         journalistic_intervenience = factor(journalistic_intervenience,
+                                             levels = c("No Journalistic Intervenience (Facebook)", "Medium Journalistic Intervenience (TV-shows)", "Strong Journalistic Intervenience (Newspapers)"))) %>%
+  ggplot(mapping = aes(y = perc, x = party, 
+                       fill = journalistic_intervenience)) +
+  geom_col(alpha = .8, position = position_dodge()) +
+  labs(y = "", x = "", title = "Journalistic Intervenience (H1a)") +
+  theme_minimal() +
+  scale_fill_viridis(option = "magma", discrete = T) +
+  scale_y_continuous(labels=percent) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank()) +
+  guides(fill=guide_legend(nrow=3,byrow=TRUE))
+```
+
+
+```{r, echo=F, message=FALSE, warning=FALSE}
+d %>%
+  select(party, poll_standing1:poll_standing6) %>%
+  distinct(party, .keep_all = T) %>%
+  pivot_longer(cols = poll_standing1:poll_standing6,
+               names_to = "id",
+               values_to = "polls") %>%
+  drop_na() %>%
+  mutate(id = recode(id, 
+                     `poll_standing1` = "Polls (Measure 1)",
+                     `poll_standing2` = "Polls (Measure 2)",
+                     `poll_standing3` = "Polls (Measure 3)",
+                     `poll_standing4` = "Polls (Measure 4)",
+                     `poll_standing5` = "Polls (Measure 5)",
+                     `poll_standing6` = "Polls (Measure 6)")) %>%
+  ggplot(mapping = aes(y = polls, x = party, colour = id)) +
+  geom_point(position = position_dodge(width = 0.80), size = 2) +
+  labs(y = "", x = "", title = "Standing in the Polls (H1b)") +
+  theme_minimal() +
+  scale_color_viridis(option = "magma", discrete = T) +
+  scale_y_continuous(labels=percent) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank()) 
+```
+
+```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
+d %>%
+  select(party, issue, aio_percentage, cio_mean:cio_sd) %>%
+  drop_na() %>%
+  pivot_longer(cols = aio_percentage:cio_sd,
+               names_to = "id",
+               values_to = "io") %>%
+  mutate(id = recode(id,
+                     `aio_percentage` = "Associative Issue Ownership: Percentage",
+                     `cio_mean` = "Competence Issue Ownership: Mean Value",
+                     `cio_median` = "Competence Issue Ownership: Median Value",
+                     `cio_sd` = "Competence Issue Ownership: Standard Deviation")) %>%
+  ggplot(mapping = aes(y = io, x = party, 
+                       color = id)) +
+  facet_wrap(.~issue, ncol = 4) +
+  geom_point(position = position_dodge(width = 0.80), size = 2) +
+  labs(y = "", x = "", title = "Issue Ownership (H2a)") +
+  theme_minimal() +
+  scale_color_viridis(option = "magma", discrete = T) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank())  +
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
+```
+
+
+```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=7}
+d %>%
+  select(party,ie_median_ches2017:ie_median_cmp2012) %>%
+  mutate(ie_mean_cmp2017 = ie_mean_cmp2017/10,
+         ie_median_cmp2017 = ie_median_cmp2017/10,
+         ie_mean_cmp2012 = ie_mean_cmp2012/10,
+         ie_median_cmp2012 = ie_median_cmp2012/10,) %>%
+  drop_na() %>%
+  distinct(party, .keep_all = T) %>%
+  pivot_longer(cols = ie_median_ches2017:ie_median_cmp2012,
+               names_to = "id",
+               values_to = "extremity") %>%
+  mutate(id = recode(id,
+                     `ie_median_ches2017` = "Difference from Median (CHES 2017)",
+                     `ie_mean_ches2017` = "Difference from Mean (CHES 2017)",
+                     `ie_median_ches2014` = "Difference from Median (CHES 2014)",
+                     `ie_mean_ches2014` = "Difference from Mean (CHES 2014)",
+                     `ie_mean_cmp2017` = "Difference from Median (MP 2017)",
+                     `ie_median_cmp2017` = "Difference from Mean (MP 2017)",
+                     `ie_mean_cmp2012` = "Difference from Median (MP 2012)",
+                     `ie_median_cmp2012` = "Difference from Mean (MP 2012)")) %>%
+  ungroup %>%
+  ggplot(mapping = aes(y = extremity, x = party, 
+                       colour = id, group = id)) +
+  geom_point(position = position_dodge(width = 0.80), size = 2) +
+  labs(y = "", x = "", title = "Ideological Extremity (H2b)") +
+  theme_minimal() +
+  scale_color_viridis(option = "magma", discrete = T) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank())  +
+  guides(colour=guide_legend(nrow=4, byrow=T))
+```
+
+### Control Variables
+
+```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=7}
+d %>%
+  select(`Being in Opposition` = in_opposition, 
+         `New Party` = new_party,
+         party) %>%
+  pivot_longer(cols = 1:2,
+               names_to = "variable") %>%
+  group_by(party, variable, value) %>%
+  summarise(n = n()) %>%
+  ggplot(mapping = aes(x = party, y = n,fill = value)) +
+  geom_col(alpha = .8, position = position_dodge()) +
+  facet_grid(rows = vars(variable), scales = "free") +
+  labs(x = "", y = "Count", title = "Control Variables") +
+  theme_minimal() +
+  scale_fill_viridis(option = "magma", discrete = F) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="none",
+        legend.title = element_blank()) +
+  guides(fill=guide_legend(nrow=6, byrow=T))
+```
+
+```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+d %>%
+  select(party, source, medium) %>%
+  ggplot(mapping = aes(x = source, fill = party)) +
+  facet_wrap(.~medium, scales = "free", ncol = 2) +
+  geom_bar(alpha = .8, position = position_dodge()) +
+  labs(x = "", y = "Count", title = "Control Variables") +
+  theme_minimal() +
+  scale_fill_viridis(option = "magma", discrete = T) +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank()) +
+  guides(fill=guide_legend(nrow=2, byrow=T))
+```
+
+### Correlations Matrix
+```{r, echo=F, message=T, warning=T, fig.width=15, fig.height=15}
+d %>%
+  select(`Appeals made by Parties` = direction_appeal,
+         `Journalistic Intervenience` = journalistic_intervenience,
+         `Standing in the Polls (1)`  = poll_standing1,
+         `Standing in the Polls (2)`  = poll_standing2,
+         `Standing in the Polls (3)`  = poll_standing3,
+         `Standing in the Polls (4)`  = poll_standing4,
+         `Standing in the Polls (5)`  = poll_standing5,
+         `Standing in the Polls (6)`  = poll_standing6,
+         `Associative Issue Ownership`  = aio_percentage,
+         `Competence Issue Ownership: Mean`  = cio_mean,
+         `Competence Issue Ownership: Median`  = cio_median,
+         `Competence Issue Ownership: Standard Deviation`  = cio_sd,
+         `Ideological Extremity: Mean (CHES 2017)` = ie_mean_ches2017, 
+         `Ideological Extremity: Median (CHES 2017)` = ie_median_ches2017,
+         `Ideological Extremity: Mean (CHES 2014)` = ie_mean_ches2014,
+         `Ideological Extremity: Median (CHES 2014)` = ie_median_ches2014,
+         `Ideological Extremity: Mean (MP 2017)` = ie_mean_cmp2017,
+         `Ideological Extremity: Median (MP 2017)` = ie_median_cmp2017,
+         `Ideological Extremity: Mean (MP 2012)` = ie_mean_cmp2012,
+         `Ideological Extremity: Median (MP 2012)` = ie_median_cmp2012,
+         `Being in Opposition` = in_opposition,
+         `New Party` = new_party, 
+         Source = source) %>%
+  ggcorrmat(
+  type = "robust", # correlation method
+  cor.vars = c(everything()), # a range of variables can be selected
+  colors = c("#000004FF", "#B63679FF", "#FCFDBFFF"),
+  title = "Correlalogram for Variables under Study"
+)
+```

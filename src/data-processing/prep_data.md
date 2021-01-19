@@ -31,17 +31,18 @@ source("../lib/functions.R")
 ## Tidy Data
 
 Load manually annotated data - for a validation excercise see
-[here](../../data/intermediate/Subset_data_intercoder_reliability.xlsx)
-- and create variables for being in opposition (`in_opposition`) and
-whether the party is a newly founded party (`new_party`).
+[here](../../n) - and create variables for being in opposition
+(`in_opposition`) and whether the party is a newly founded party
+(`new_party`).
 
 ``` r
 d <- read_csv("../../data/raw/coded-data-NL-2017-campaign.csv") %>%
   mutate(in_opposition = ifelse(party == "VVD", 0,
-                      ifelse(party == "PvdA", 0, 1)),
+                         ifelse(party == "PvdA", 0, 1)),
          new_party = ifelse(party == "FvD", 1, 0),
          journalistic_intervenience = ifelse(medium=="Facebook", 0,
-                                      ifelse(medium=="Newspapers", 1, 0.5)))
+                                      ifelse(medium=="Newspapers", 1, 0.5)),
+         id = paste(date, party, sep = "."))
 ```
 
 ### Ideological Extremity: CHES and Manifesto Project
@@ -54,16 +55,26 @@ Survey](https://www.chesdata.eu/2017-chapel-hill-expert-survey) and the
 
 We first add the [2017 Chapel Hill Expert
 Survey](https://www.chesdata.eu/s/CHES_means_2017.csv) to our manually
-annotated data `d` to calculate party’s ideological extremity as well as
-to add the seat share of the party in the national elections most prior
-to 2017.
+annotated data `d` to calculate party’s ideological extremity for the
+2017 (`ie_mean_ches2017` and `ie_median_ches2017`), and 2012 election
+campaigns (`ie_mean_ches2014` and `ie_median_ches2014`).
 
 ``` r
 ches <- read_csv("https://www.chesdata.eu/s/CHES_means_2017.csv") %>%
   filter(country == "nl") %>%
-  select(party = party, rile_ches = lrgen, seats = seat) %>%
-  mutate(ideological_extremity_ches1 = abs(rile_ches - median(rile_ches)),
-         ideological_extremity_ches2 = abs(rile_ches - mean(rile_ches))) %>%
+  select(party = party, rile_ches = lrgen) %>%
+  mutate(ie_median_ches2017 = abs(rile_ches - median(rile_ches)),
+         ie_mean_ches2017 = abs(rile_ches - mean(rile_ches))) %>%
+  select(-rile_ches)
+
+d <- left_join(d, ches, by = "party")
+rm(ches)
+
+ches <- read_csv("https://www.chesdata.eu/s/2014_CHES_dataset_means.csv") %>%
+  filter(cname == "net") %>%
+  select(party = party_name, rile_ches = lrgen) %>%
+  mutate(ie_median_ches2014 = abs(rile_ches - median(rile_ches)),
+         ie_mean_ches2014 = abs(rile_ches - mean(rile_ches))) %>%
   select(-rile_ches)
 
 d <- left_join(d, ches, by = "party")
@@ -71,19 +82,33 @@ rm(ches)
 ```
 
 Second, we added data from the [Manifesto
-Project](https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv)
-to our manually annotated data `d` to calculate party’s ideological
-extremity.
+Project](https://manifesto-project.wzb.eu) to our manually annotated
+data `d` to calculate party’s ideological extremity based on the 2017
+(`ie_mean_cmp2017` and `ie_median_cmp2017`), and 2012 election
+manifesto’s (`ie_mean_cmp2012` and `ie_median_cmp2012`) as well as to
+add the seat share of the party in the national elections most prior to
+2017
+(`seats`).
 
 ``` r
 cmp <- read_csv("https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv") %>%
   filter(countryname == "Netherlands", date == "201703") %>%
-  mutate(ideological_extremity_cmp1 = abs(rile - median(rile)),
-         ideological_extremity_cmp2 = abs(rile - mean(rile))) %>%
-  select(cmp_code = party,ideological_extremity_cmp1,
-         ideological_extremity_cmp2)
-
+  mutate(ie_mean_cmp2017 = abs(rile - median(rile)),
+         ie_median_cmp2017 = abs(rile - mean(rile))) %>%
+  select(cmp_code = party,ie_mean_cmp2017,
+         ie_median_cmp2017)
 d <- left_join(d, cmp, by = "cmp_code")
+rm(cmp)
+
+cmp <- read_csv("https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv") %>%
+  filter(countryname == "Netherlands", date == "201209") %>%
+  mutate(ie_mean_cmp2012 = abs(rile - median(rile)),
+         ie_median_cmp2012 = abs(rile - mean(rile))) %>%
+  select(cmp_code = party, ie_mean_cmp2012,
+         ie_median_cmp2012, seats = absseat)
+
+d <- left_join(d, cmp, by = "cmp_code") %>%
+  drop_na(date)
 rm(cmp)
 ```
 
@@ -91,10 +116,17 @@ rm(cmp)
 
 Subsequently, we add [polling
 data](https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen)
-to our manually annotated data. We use the (a) mean and (b) median value
-of the polls averaged over the different polling houses between February
-15th 2017 and March 14th
-2017.
+to our manually annotated data. We calculate the relative gains (or
+losses) based on: a) polled seats vis-a-vis parliamentary seats prior to
+the 2017 elections (`poll_standing1`), b) lagged polled seats by 1 day
+vis-a-vis parliamentary seats prior to the 2017 elections
+(`poll_standing2`), c) lagged polled seats by 1 week vis-a-vis
+parliamentary seats prior to the 2017 elections (`poll_standing3`), d)
+polled seats vis-a-vis lagged polled seats by 1 day (`poll_standing4`),
+e) polled seats vis-a-vis lagged polled seats by 1 week
+(`poll_standing5`), f) lagged polled seats by 1 day vis-a-vis lagged
+polled seats by 1 week
+(`poll_standing6`).
 
 ``` r
 polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#Peilingresultaten" %>%
@@ -105,32 +137,105 @@ polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#
 polls <- do.call(rbind.data.frame, polls) %>%
   tibble() %>%
   filter(Datum > "14 februari 2017") %>%
+  mutate(Datum = recode(Datum,
+                        `14 maart 2017` = "14-03-2017",
+                        `15 februari 2017` = "15-02-2017",
+                        `15 maart 2017` = "15-03-2017",
+                        `16 februari 2017` = "16-02-2017",
+                        `17 februari 2017` = "17-02-2017",
+                        `18 februari 2017` = "18-02-2017",
+                        `19 februari 2017` = "19-02-2017",
+                        `2 februari 2017` = "02-02-2017",
+                        `2 maart 2017` = "02-03-2017",
+                        `20 februari 2017` = "20-02-2017",
+                        `21 februari 2017` = "21-02-2017",
+                        `22 februari 2017` = "22-02-2017",
+                        `23 februari 2017` = "23-02-2017",
+                        `24 februari 2017` = "24-02-2017",
+                        `25 februari 2017` = "25-02-2017",
+                        `26 februari 2017` = "26-02-2017",
+                        `27 februari 2017` = "27-02-2017",
+                        `28 februari 2017` = "28-02-2017",
+                        `3 februari 2017` = "03-02-2017",
+                        `3 maart 2017` = "03-03-2017",
+                        `4 februari 2017` = "04-02-2017",
+                        `4 maart 2017` = "04-03-2017",
+                        `5 februari 2017` = "05-02-2017",
+                        `5 maart 2017` = "05-03-2017",
+                        `6 februari 2017` = "06-02-2017",
+                        `6 maart 2017` = "06-03-2017",
+                        `7 februari 2017` = "07-02-2017",
+                        `7 maart 2017` = "07-03-2017",
+                        `8 februari 2017` = "08-02-2017",
+                        `8 maart 2017` = "08-03-2017",
+                        `9 februari 2017` = "03-02-2017",
+                        `9 maart 2017` = "03-03-2017"),
+         Datum = as.Date(Datum, format = "%d-%m-%Y")) %>%
+  filter(Datum > "2017-02-14",
+         Datum < "2017-03-15") %>%
   pivot_longer(cols = c(VVD:FvD),
                names_to = "party",
                values_to = "polls") %>%
-  select(party, polls) %>%
+  select(date = Datum, party, polls) %>%
   filter(party != "Denk") %>%
-  group_by(party) %>%
-  summarise(mean_polls = mean(polls),
-            median_polls = median(polls)) %>%
-  ungroup()
+  mutate(party = recode(party,
+                        `50+` = "50PLUS")) %>%
+  filter(party != "VNL")
 
-d <- left_join(d, polls, by = "party") %>%
-  mutate(polls_standing_mean = round(mean_polls/ seats,2),
-         polls_standing_median = round(median_polls/seats, 2))
+polls <- polls %>%
+  add_case(date = rep(as.Date("2017-03-01"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(26, 13, 22, 16, 16, 18, 6, 17, 2, 6, 6, 0))  %>%
+  add_case(date = rep(as.Date("2017-03-09"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-10"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-11"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-12"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1)) %>%
+  add_case(date = rep(as.Date("2017-03-13"), 12),
+           party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
+                     "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
+           polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1))  %>%
+  mutate(id = paste(date, party, sep = ".")) %>%
+  arrange(date) %>%
+  group_by(party) %>%
+  mutate(l_polls = lag(polls),
+         l_polls_week = lag(polls, n =7)) %>%
+  ungroup() %>%
+  select(id, polls, l_polls, l_polls_week)
+
+d <- left_join(d, polls, by = "id") %>%
+  mutate(seats = ifelse(party=="FvD", 0, seats),
+         poll_standing1 = round(polls/seats,2),
+         poll_standing2 = round(l_polls/seats,2),
+         poll_standing3 = round(l_polls_week/seats,2),
+         poll_standing4 = round(polls/l_polls, 2),
+         poll_standing5 = round(polls/l_polls_week, 2),
+         poll_standing6 = round(l_polls/l_polls_week, 2))
+
 rm(polls)
 ```
 
-### Associative and Competence Issue Ownership
+### Associative Issue Ownership
 
 We use the October 2016 panel wave of KiesKompas to measure associative
 and competence issue ownership. We measure associative issue ownership
 with the question *Which issue comes to your mind when you think about
-<party>?*. We measure competence issue ownership with the question *do
-you agree or disagree with <party> on the issue you associated with the
-party?*. For each question, the respective issue ownership variables
-will be measured by summation over the
-respondents.
+<party>?*. For each question, associative issue ownership variables will
+be measured by summation over the respondents and calculating in
+percentages how many of the respondents associate an issue with a
+party.
 
 ``` r
 aio <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
@@ -199,6 +304,17 @@ d <- d %>%
 d <- left_join(d, aio, by = "id") 
 rm(aio, associate_io)
 ```
+
+# Competence Issue Ownership
+
+We use the October 2016 panel wave of KiesKompas to measure competence
+issue ownership. We measure competence issue ownership with the question
+*do you agree or disagree with <party> on the issue you associated with
+the party?*. For each question, the compentence issue ownership
+variables will be measured by summation over the respondents. Negative
+figures imply that more people disagree with the position of the party
+than people have agreed with the position of the
+party.
 
 ``` r
 data <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
@@ -311,7 +427,7 @@ for(i in 1:19){
                         issue = i, party = "SGP"))}
 }
 cio <- rbind(cio, sgp)
-rm(sgp, data, io)
+rm(sgp, data, i)
 
 cio <- cio %>%
   mutate(issue = recode(issue,
@@ -350,3 +466,27 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 ```
 
 ## Visualization of Data
+
+### Dependent Variable
+
+![](prep_data_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+### Independent Variable
+
+![](prep_data_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+![](prep_data_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+
+![](prep_data_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+![](prep_data_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+
+### Control Variables
+
+![](prep_data_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+![](prep_data_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
+### Correlations Matrix
+
+![](prep_data_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
