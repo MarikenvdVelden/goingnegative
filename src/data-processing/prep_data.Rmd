@@ -196,7 +196,13 @@ d <- left_join(d, polls, by = "id") %>%
          poll_standing3 = round(l_polls_week/seats,2),
          poll_standing4 = round(polls/l_polls, 2),
          poll_standing5 = round(polls/l_polls_week, 2),
-         poll_standing6 = round(l_polls/l_polls_week, 2))
+         poll_standing6 = round(l_polls/l_polls_week, 2),
+         poll_standing1 = ifelse(seats==0, polls, poll_standing1),
+         poll_standing2 = ifelse(polls==0, polls, poll_standing2),
+         poll_standing3 = ifelse(polls==0, polls, poll_standing3),
+         poll_standing4 = ifelse(polls==0, polls, poll_standing4),
+         poll_standing5 = ifelse(polls==0, polls, poll_standing5),
+         poll_standing6 = ifelse(polls==0, polls, poll_standing6))
 
 rm(polls)
 ```
@@ -270,7 +276,8 @@ aio <- aio %>%
 d <- d %>%
   mutate(associate_io = ifelse(issue==associated_issue,1,0),
          id = paste(party, issue, sep = "-")) 
-d <- left_join(d, aio, by = "id") 
+d <- left_join(d, aio, by = "id") %>%
+  mutate(aio_percentage = replace_na(aio_percentage, 0))
 rm(aio, associate_io)
 ```
 
@@ -419,7 +426,11 @@ cio <- cio %>%
     id = paste(party, issue, sep ="-")) %>%
   select(-party, -issue)
 
-d <- left_join(d, cio, by = "id")
+d <- left_join(d, cio, by = "id") %>%
+  mutate(cio_mean = replace_na(cio_mean, 0),
+         cio_median = replace_na(cio_median, 0),
+         cio_sd = replace_na(cio_sd, 0))
+  
 rm(cio)
 ```
 
@@ -430,7 +441,35 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ## Visualization of Data
 
+```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+tmp <- d %>%  select(party) %>% group_by(party) %>% summarise(n=n())
+d <- left_join(d, tmp, by = "party")
+rm(tmp)
+
+d %>%
+  select(party, source, medium,direction_appeal, n) %>%
+  group_by(party, source, medium,direction_appeal) %>%
+  summarise(tot = n(),
+            perc = tot/n) %>%
+  mutate(id = paste(party, source, direction_appeal, tot)) %>%
+  distinct(id, .keep_all = T) %>%
+  ggplot(mapping = aes(x = source, y = perc, fill = party)) +
+  facet_grid(rows = vars(medium),
+             cols = vars(direction_appeal), scales = "free") +
+  geom_col(alpha = .8, position = position_dodge()) +
+  labs(x = "", y = "", title = "Appeals per Medium") +
+  theme_minimal() +
+  scale_y_continuous(labels=percent) +
+  scale_fill_viridis(option = "magma", discrete = T) +
+  theme(plot.title = element_text(hjust = 0.5),
+        legend.position="bottom",
+        legend.title = element_blank()) +
+  guides(fill=guide_legend(nrow=2, byrow=T)) +
+  coord_flip()
+```
+
 ### Dependent Variable
+
 ```{r, echo=F}
 d %>%
   select(direction_appeal, party) %>%
@@ -588,22 +627,6 @@ d %>%
         legend.position="none",
         legend.title = element_blank()) +
   guides(fill=guide_legend(nrow=6, byrow=T))
-```
-
-```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
-d %>%
-  select(party, source, medium) %>%
-  ggplot(mapping = aes(x = source, fill = party)) +
-  facet_wrap(.~medium, scales = "free", ncol = 2) +
-  geom_bar(alpha = .8, position = position_dodge()) +
-  labs(x = "", y = "Count", title = "Control Variables") +
-  theme_minimal() +
-  scale_fill_viridis(option = "magma", discrete = T) +
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle=45),
-        legend.position="bottom",
-        legend.title = element_blank()) +
-  guides(fill=guide_legend(nrow=2, byrow=T))
 ```
 
 ### Correlations Matrix

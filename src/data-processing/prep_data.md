@@ -222,7 +222,13 @@ d <- left_join(d, polls, by = "id") %>%
          poll_standing3 = round(l_polls_week/seats,2),
          poll_standing4 = round(polls/l_polls, 2),
          poll_standing5 = round(polls/l_polls_week, 2),
-         poll_standing6 = round(l_polls/l_polls_week, 2))
+         poll_standing6 = round(l_polls/l_polls_week, 2),
+         poll_standing1 = ifelse(seats==0, polls, poll_standing1),
+         poll_standing2 = ifelse(polls==0, polls, poll_standing2),
+         poll_standing3 = ifelse(polls==0, polls, poll_standing3),
+         poll_standing4 = ifelse(polls==0, polls, poll_standing4),
+         poll_standing5 = ifelse(polls==0, polls, poll_standing5),
+         poll_standing6 = ifelse(polls==0, polls, poll_standing6))
 
 rm(polls)
 ```
@@ -301,7 +307,8 @@ aio <- aio %>%
 d <- d %>%
   mutate(associate_io = ifelse(issue==associated_issue,1,0),
          id = paste(party, issue, sep = "-")) 
-d <- left_join(d, aio, by = "id") 
+d <- left_join(d, aio, by = "id") %>%
+  mutate(aio_percentage = replace_na(aio_percentage, 0))
 rm(aio, associate_io)
 ```
 
@@ -455,7 +462,11 @@ cio <- cio %>%
     id = paste(party, issue, sep ="-")) %>%
   select(-party, -issue)
 
-d <- left_join(d, cio, by = "id")
+d <- left_join(d, cio, by = "id") %>%
+  mutate(cio_mean = replace_na(cio_mean, 0),
+         cio_median = replace_na(cio_median, 0),
+         cio_sd = replace_na(cio_sd, 0))
+  
 rm(cio)
 ```
 
@@ -467,13 +478,13 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ## Visualization of Data
 
-### Dependent Variable
-
 ![](prep_data_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
 
-### Independent Variable
+### Dependent Variable
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+
+### Independent Variable
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
@@ -481,9 +492,9 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
 
-### Control Variables
-
 ![](prep_data_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+
+### Control Variables
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
 

@@ -1,0 +1,206 @@
+---
+title: 'Analysis'
+author: "Dirck de Kleer & Mariken A.C.G. van der Velden"
+output: 
+  github_document:
+    toc: yes
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+library(printr)
+library(rmarkdown)
+```
+
+# Scripts
+- [Required Packages &amp; Reproducibility](#required-packages-&amp;-reproducibility)
+- [Analysis](#analysis)
+  - [H1a](#H1a)
+  - [H1b](#H1b)
+  - [H2a](#H2a)
+  - [H2b](#H2b)
+  
+## Required Packages &amp; Reproducibility
+```{r, message=FALSE, warning=F}
+rm(list=ls())
+
+source("../lib/functions.R")
+```
+
+## Analysis
+
+```{r}
+load("../../data/intermediate/cleaned_data.RData")
+df <- d %>%
+  mutate(direction_appeal = recode(direction_appeal,
+                                   `Negative Appeal` = 1,
+                                   `Positive Appeal` = 0),
+         aio_percentage = ifelse(party=="FvD", 0, aio_percentage),
+         cio_mean = ifelse(party=="FvD", 0, cio_mean),
+         cio_median = ifelse(party=="FvD", 0, cio_median),
+         cio_sd = ifelse(party=="FvD", 0, cio_sd),
+         poll_standing1 = ifelse(polls==0 & seats==0, 0, poll_standing1),
+         poll_standing2 = ifelse(polls==0 & seats==0, 0, poll_standing2),
+         poll_standing3 = ifelse(polls==0 & seats==0, 0, poll_standing3),
+         poll_standing4 = ifelse(polls==0 & seats==0, 0, poll_standing4),
+         poll_standing5 = ifelse(polls==0 & seats==0, 0, poll_standing5),
+         poll_standing6 = ifelse(polls==0 & seats==0, 0, poll_standing6)) %>%
+  group_by(date, party, medium, journalistic_intervenience) %>%
+  summarise(direction_appeal = sum(direction_appeal),
+            polls1 = mean(poll_standing1, na.rm = T),
+            polls2 = mean(poll_standing2, na.rm = T),
+            polls3 = mean(poll_standing3, na.rm = T),
+            polls4 = mean(poll_standing4, na.rm = T),
+            polls5 = mean(poll_standing5, na.rm = T),
+            polls6 = mean(poll_standing6, na.rm = T),
+            aio = mean(aio_percentage, na.rm = T),
+            cio1 = mean(cio_mean, na.rm = T),
+            cio2 = mean(cio_median, na.rm = T),
+            cio3 = mean(cio_sd, na.rm = T),
+            ie1 = mean(ie_median_ches2017, na.rm = T),
+            ie2 = mean(ie_mean_ches2017, na.rm = T),
+            ie3 = mean(ie_median_ches2014, na.rm = T),
+            ie4 = mean(ie_mean_ches2014, na.rm = T),
+            ie5 = mean(ie_median_cmp2017, na.rm = T),
+            ie6 = mean(ie_mean_cmp2017, na.rm = T),
+            ie7 = mean(ie_median_cmp2012, na.rm = T),
+            ie8 = mean(ie_mean_cmp2012, na.rm = T)) %>%
+  mutate(opposition = ifelse(party == "VVD", 0,
+                      ifelse(party == "PvdA", 0, 1)),
+         new_party = ifelse(party == "FvD", 1, 0)) %>%
+  mutate(polls1 = ifelse(polls1==Inf, 0, polls1),
+         id2 = paste(date, medium, collapse="."))
+
+df2 <- df %>%
+  drop_na()
+```
+
+### Multiverse Analysis
+```{r}
+M <- multiverse()
+
+inside(M, {
+data <- df2  %>%
+    mutate(Polls = branch(polls_calculation,
+            "p_option1" ~ polls1,
+            "p_option2" ~ polls2,
+            "p_option3" ~ poll3,
+            "p_option4" ~ poll4,
+            "p_option5" ~ poll5,
+            "p_option6" ~ poll6),
+           IE = branch(ie_calculation,
+            "ie_option1" ~ ie1,
+            "ie_option2" ~ ie2,
+            "ie_option3" ~ ie3,
+            "ie_option4" ~ ie4,
+            "ie_option5" ~ ie5,
+            "ie_option6" ~ ie6,
+            "ie_option7" ~ ie7,
+            "ie_option8" ~ ie8),
+           IO = branch(io_calculation,
+            "io_option1" ~ aio,
+            "io_option2" ~ cio1,
+            "io_option3" ~ cio2,
+            "io_option4" ~ cio3),
+           medium = branch(medium_calculation,
+            "io_option1" ~ medium),
+           opposition = branch(opposition_calculation,
+            "opp_option1" ~ opposition)) 
+})
+
+expand(M) %>%
+  select(-.code) %>%
+  head()
+
+expand(M) %>% nrow()
+
+inside(M, {
+  fit_1a <- plm(direction_appeal ~ factor(medium) + polls1 + ie1 + 
+                  factor(opposition) + factor(new_party), 
+                data=df, index=c("id2"), model="within") 
+  fit_1b <- plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls2 + ie1 + factor(opposition), data=df2, index=c("id2"), model="within")
+  fit_1c <- plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls3 + ie1 + factor(opposition), data=df2, index=c("id2"), model="within")
+  fit_1d <- plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls4 + ie1 + factor(opposition), data=df2, index=c("id2"), model="within")
+  fit_1e <- plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls5 + ie1 + factor(opposition), data=df2, index=c("id2"), model="within")
+  fit_1f <- plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls6 + ie1 + factor(opposition), data=df2, index=c("id2"), model="within")
+})
+
+inside(M, {
+  summary_1a <- fit_1a %>% 
+    tidy(conf.int = TRUE )
+  summary_1b <- fit_1b %>% 
+    tidy(conf.int = TRUE )
+  summary_1c <- fit_1c %>% 
+    tidy(conf.int = TRUE )
+  summary_1d <- fit_1d %>% 
+    tidy(conf.int = TRUE )
+  summary_1e <- fit_1e %>% 
+    tidy(conf.int = TRUE )
+  summary_1f <- fit_1f %>% 
+    tidy(conf.int = TRUE )
+})
+
+
+inside(M, {
+  summary_1a <- fit_1a %>% 
+    tidy(conf.int = TRUE )
+})
+execute_multiverse(M)
+
+expand(M) %>%
+  select(-.code) %>%
+  mutate( summary = map(.results, "summary_RelComp" ) ) %>%
+  unnest( cols = c(summary) ) %>%
+  head( 10 )
+
+```
+
+
+### H1a
+```{r}
+ols <- lm(direction_appeal ~ factor(medium) +
+           polls1 + ie1 + factor(opposition) + 
+           factor(new_party) + factor(date), df)
+m1 <-plm(direction_appeal ~ factor(journalistic_intervenience) +
+           polls1 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("id2"), model="within") 
+summary(ols)
+pFtest(m1, ols)
+```
+
+### H2a
+```{r}
+m2a <-plm(direction_appeal ~ factor(journalistic_intervenience)*polls1 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("date"), model="within") 
+summary(m2a)
+
+
+t <- df %>%
+  drop_na() 
+m2b<- plm(direction_appeal ~ factor(journalistic_intervenience)*polls2+ ie1 + factor(opposition), 
+          data=t, index=c("date"), model="within") 
+summary(m2b)
+
+m2c <-plm(direction_appeal ~ factor(journalistic_intervenience)*polls3 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("date"), model="within") 
+summary(m2c)
+
+m2d <-plm(direction_appeal ~ factor(journalistic_intervenience)*polls4 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("date"), model="within") 
+summary(m2d)
+
+m2e <-plm(direction_appeal ~ factor(journalistic_intervenience)*polls5 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("date"), model="within") 
+summary(m2e)
+
+m2f <-plm(direction_appeal ~ factor(journalistic_intervenience)*polls6 + ie1 + factor(opposition) + 
+           factor(new_party), data=df, index=c("date"), model="within") 
+summary(m2f)
+```
