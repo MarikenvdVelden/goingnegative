@@ -221,15 +221,24 @@ polls <- polls %>%
 
 d <- left_join(d, polls, by = "id") %>%
   mutate(seats = ifelse(party=="FvD", 0, seats),
-         poll_standing1 = round(polls/seats,2),
-         poll_standing2 = round(l_polls1/seats,2),
-         poll_standing3 = round(l_polls7/seats,2),
-         poll_standing4 = round(l_polls_mean/seats,2),
-         poll_standing5 = round(polls/l_polls1, 2),
-         poll_standing6 = round(polls/l_polls7, 2),
-         poll_standing7 = round(polls/l_polls_mean, 2),
-         poll_standing8 = round(l_polls1/l_polls7, 2),
-         poll_standing9 = round(l_polls1/l_polls_mean, 2))
+         polls = ifelse(party=="FvD" & date=="2017-02-15", 0,
+                 ifelse(party=="FvD" & date=="2017-02-16", 0, polls)),
+         poll_standing1 = ifelse(party=="FvD", polls, round(polls/seats,2)),
+         poll_standing2 = ifelse(party=="FvD", polls,round(l_polls1/seats,2)),
+         poll_standing3 = ifelse(party=="FvD", polls,
+                                 round(l_polls7/seats,2)),
+         poll_standing4 = ifelse(party=="FvD", polls,
+                                 round(l_polls_mean/seats,2)),
+         poll_standing5 = ifelse(party=="FvD", polls, 
+                                 round(polls/l_polls1, 2)),
+         poll_standing6 = ifelse(party=="FvD", polls, 
+                                 round(polls/l_polls7, 2)),
+         poll_standing7 = ifelse(party=="FvD", polls,  
+                                 round(polls/l_polls_mean, 2)),
+         poll_standing8 = ifelse(party=="FvD", polls, 
+                                 round(l_polls1/l_polls7, 2)),
+         poll_standing9 = ifelse(party=="FvD", polls,
+                                 round(l_polls1/l_polls_mean, 2)))
 
 rm(polls)
 ```
