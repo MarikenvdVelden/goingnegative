@@ -141,7 +141,7 @@ h1a <- expand(M) %>%
   mutate(id = recode(id, `estimate` = "Estimate",
                      `p.value` = "P-Value"))
 
-dummy2 <- data.frame(id = c("Estimate", "P-Value"), Z = c(0, 0.1))
+dummy2 <- data.frame(id = c("Estimate", "P-Value"), Z = c(1, 0.1))
 ggplot(h1a, aes(x = value, y = term, group = term)) +
   geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
   facet_grid(cols = vars(id), scales = "free") +
@@ -149,7 +149,7 @@ ggplot(h1a, aes(x = value, y = term, group = term)) +
   labs(x = "", y = "", title = "Hypothesis 1a") +
   theme(plot.title = element_text(hjust = 0.5)) + 
     geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = .3, colour = "darkgrey")
+               linetype = "dashed", size = 1, colour = "darkgrey")
 
 ```
 
