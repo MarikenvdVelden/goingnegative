@@ -7,6 +7,7 @@ Dirck de Kleer & Mariken A.C.G. van der Velden
   - [Required Packages &
     Reproducibility](#required-packages-&-reproducibility)
   - [Analysis](#analysis)
+      - [Specifying the Multiverse](#specifiying-the-multiverse)
       - [H1a](#H1a)
       - [H1b](#H1b)
       - [H2a](#H2a)
@@ -59,7 +60,7 @@ df <- df %>%
   drop_na(-ie3, -ie4, -ie7, -ie8) 
 ```
 
-### Multiverse Analysis
+### Specifying the Multiverse
 
 ``` r
 M <- multiverse()
@@ -101,6 +102,8 @@ data <- df  %>%
 n <- expand(M) %>% nrow()
 ```
 
+### H1a
+
 ``` r
 inside(M, {
   fit_1 <- plm(direction_appeal ~ journalistic_intervenience + polls + ie1 + cio1 +
@@ -141,7 +144,153 @@ ggplot(h1a, aes(x = value, y = term, group = term)) +
   labs(x = "", y = "", title = "Hypothesis 1a") +
   theme(plot.title = element_text(hjust = 0.5)) + 
     geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = 1, colour = "darkgrey")
+               linetype = "dashed", size = .8, colour = "#180F3EFF")
 ```
 
 ![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
+
+### H1b
+
+``` r
+inside(M, {
+  fit_2 <- plm(direction_appeal ~ journalistic_intervenience*polls +
+                 ie1 + cio1 + factor(opposition) + factor(new_party),
+                data=df, index=c("date"), model="within") 
+})
+
+inside(M, {
+  summary_fit_2 <- fit_2 %>% 
+    broom::tidy( conf.int = TRUE )
+})
+
+execute_multiverse(M)
+
+
+h1b <- expand(M) %>%
+  mutate( summary = map(.results, "summary_fit_2") ) %>%
+  unnest( cols = c(summary) ) %>%
+  filter( term != "(Intercept)" ) %>%
+  select(term, estimate, p.value) %>%
+  mutate(term = recode(term,
+                       `cio1` = "Issue Ownership",
+                       `factor(new_party)1` = "Being New Party",
+                       `factor(opposition)1` = "Being in Opposition",
+                       `ie1` = "Ideological Extremity",
+                       `journalistic_intervenience` = "Journalistic Intervenience",
+                       `polls` = "Standing in the Polls",
+                       `journalistic_intervenience:polls` = 
+                         "Journalistic Intervenience * Polls")) %>%
+  pivot_longer(cols = estimate:p.value,
+               names_to = "id") %>%
+  mutate(id = recode(id, `estimate` = "Estimate",
+                     `p.value` = "P-Value"))
+
+ggplot(h1b, aes(x = value, y = term, group = term)) +
+  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
+  facet_grid(cols = vars(id), scales = "free") +
+  theme_minimal() +
+  labs(x = "", y = "", title = "Hypothesis 1b") +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+    geom_vline(data = dummy2, aes(xintercept = Z), 
+               linetype = "dashed", size = .8, colour = "#180F3EFF")
+```
+
+![](analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
+### H2a
+
+``` r
+inside(M, {
+  fit_3 <- plm(direction_appeal ~ journalistic_intervenience*cio1 + 
+                 polls + ie1 + 
+                 factor(opposition) + factor(new_party),
+                data=df, index=c("date"), model="within") 
+})
+
+inside(M, {
+  summary_fit_3 <- fit_3 %>% 
+    broom::tidy( conf.int = TRUE )
+})
+
+execute_multiverse(M)
+
+
+h2a <- expand(M) %>%
+  mutate( summary = map(.results, "summary_fit_3") ) %>%
+  unnest( cols = c(summary) ) %>%
+  filter( term != "(Intercept)" ) %>%
+  select(term, estimate, p.value) %>%
+  mutate(term = recode(term,
+                       `cio1` = "Issue Ownership",
+                       `factor(new_party)1` = "Being New Party",
+                       `factor(opposition)1` = "Being in Opposition",
+                       `ie1` = "Ideological Extremity",
+                       `journalistic_intervenience` = "Journalistic Intervenience",
+                       `polls` = "Standing in the Polls",
+                       `journalistic_intervenience:cio1` = 
+                         "Journalistic Intervenience * Issue Ownership")) %>%
+  pivot_longer(cols = estimate:p.value,
+               names_to = "id") %>%
+  mutate(id = recode(id, `estimate` = "Estimate",
+                     `p.value` = "P-Value"))
+
+ggplot(h2a, aes(x = value, y = term, group = term)) +
+  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
+  facet_grid(cols = vars(id), scales = "free") +
+  theme_minimal() +
+  labs(x = "", y = "", title = "Hypothesis 2a") +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+    geom_vline(data = dummy2, aes(xintercept = Z), 
+               linetype = "dashed", size = .8, colour = "#180F3EFF")
+```
+
+![](analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
+
+### H2b
+
+``` r
+inside(M, {
+  fit_4 <- plm(direction_appeal ~ journalistic_intervenience*ie1 + 
+                 polls + cio1 + 
+                 factor(opposition) + factor(new_party),
+                data=df, index=c("date"), model="within") 
+})
+
+inside(M, {
+  summary_fit_4 <- fit_4 %>% 
+    broom::tidy( conf.int = TRUE )
+})
+
+execute_multiverse(M)
+
+
+h2b <- expand(M) %>%
+  mutate( summary = map(.results, "summary_fit_4") ) %>%
+  unnest( cols = c(summary) ) %>%
+  filter( term != "(Intercept)" ) %>%
+  select(term, estimate, p.value) %>%
+  mutate(term = recode(term,
+                       `cio1` = "Issue Ownership",
+                       `factor(new_party)1` = "Being New Party",
+                       `factor(opposition)1` = "Being in Opposition",
+                       `ie1` = "Ideological Extremity",
+                       `journalistic_intervenience` = "Journalistic Intervenience",
+                       `polls` = "Standing in the Polls",
+                       `journalistic_intervenience:ie1` = 
+                         "Journalistic Intervenience * Ideological Extremity")) %>%
+  pivot_longer(cols = estimate:p.value,
+               names_to = "id") %>%
+  mutate(id = recode(id, `estimate` = "Estimate",
+                     `p.value` = "P-Value"))
+
+ggplot(h2b, aes(x = value, y = term, group = term)) +
+  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
+  facet_grid(cols = vars(id), scales = "free") +
+  theme_minimal() +
+  labs(x = "", y = "", title = "Hypothesis 2b") +
+  theme(plot.title = element_text(hjust = 0.5)) + 
+    geom_vline(data = dummy2, aes(xintercept = Z), 
+               linetype = "dashed", size = .8, colour = "#180F3EFF")
+```
+
+![](analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
