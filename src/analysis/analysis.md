@@ -1,29 +1,20 @@
----
-title: 'Analysis'
-author: "Dirck de Kleer & Mariken A.C.G. van der Velden"
-output: 
-  github_document:
-    toc: yes
-editor_options: 
-  chunk_output_type: console
----
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
-library(printr)
-library(rmarkdown)
-```
+Analysis
+================
+Dirck de Kleer & Mariken A.C.G. van der Velden
 
 # Scripts
-- [Required Packages &amp; Reproducibility](#required-packages-&amp;-reproducibility)
-- [Analysis](#analysis)
-  - [H1a](#H1a)
-  - [H1b](#H1b)
-  - [H2a](#H2a)
-  - [H2b](#H2b)
-  
-## Required Packages &amp; Reproducibility
-```{r, message=FALSE, warning=F}
+
+  - [Required Packages &
+    Reproducibility](#required-packages-&-reproducibility)
+  - [Analysis](#analysis)
+      - [H1a](#H1a)
+      - [H1b](#H1b)
+      - [H2a](#H2a)
+      - [H2b](#H2b)
+
+## Required Packages & Reproducibility
+
+``` r
 rm(list=ls())
 
 source("../lib/functions.R")
@@ -31,7 +22,7 @@ source("../lib/functions.R")
 
 ## Analysis
 
-```{r}
+``` r
 load("../../data/intermediate/cleaned_data.RData")
 df <- d %>%
   mutate(direction_appeal = recode(direction_appeal,
@@ -69,7 +60,8 @@ df <- df %>%
 ```
 
 ### Multiverse Analysis
-```{r}
+
+``` r
 M <- multiverse()
 
 inside(M, {
@@ -109,7 +101,7 @@ data <- df  %>%
 n <- expand(M) %>% nrow()
 ```
 
-```{R}
+``` r
 inside(M, {
   fit_1 <- plm(direction_appeal ~ journalistic_intervenience + polls + ie1 + cio1 +
                   factor(opposition) + factor(new_party), 
@@ -150,6 +142,6 @@ ggplot(h1a, aes(x = value, y = term, group = term)) +
   theme(plot.title = element_text(hjust = 0.5)) + 
     geom_vline(data = dummy2, aes(xintercept = Z), 
                linetype = "dashed", size = .3, colour = "darkgrey")
-
 ```
 
+![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
