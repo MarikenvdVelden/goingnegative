@@ -8,6 +8,7 @@ library(scales)
 library(viridis)
 library(plm)
 library(multiverse)
+library(DataCombine)
 
 get_cio <- function(data, var1, var2, var3, var4, issue, party){
   df <- data %>%

@@ -173,14 +173,16 @@ polls <- do.call(rbind.data.frame, polls) %>%
          Datum = as.Date(Datum, format = "%d-%m-%Y")) %>%
   filter(Datum > "2017-02-14",
          Datum < "2017-03-15") %>%
+  select(-PPNL, -Andere, -Denk, -VNL) %>%
   pivot_longer(cols = c(VVD:FvD),
                names_to = "party",
                values_to = "polls") %>%
+  group_by(Datum, party) %>%
+  summarise(polls = sum(polls)) %>%
   select(date = Datum, party, polls) %>%
-  filter(party != "Denk") %>%
   mutate(party = recode(party,
                         `50+` = "50PLUS")) %>%
-  filter(party != "VNL")
+  ungroup()
 
 polls <- polls %>%
   add_case(date = rep(as.Date("2017-03-01"), 12),
@@ -207,28 +209,53 @@ polls <- polls %>%
            party = c("VVD", "PvdA", "PVV", "SP", "CDA", "D66", 
                      "CU", "GL", "SGP", "PvdD", "50PLUS", "FvD"),
            polls = c(27, 13, 22, 17, 16, 18, 6, 16, 2, 5, 6, 1))  %>%
-  mutate(id = paste(date, party, sep = ".")) %>%
-  arrange(date) %>%
-  group_by(party) %>%
-  mutate(l_polls = lag(polls),
-         l_polls_week = lag(polls, n =7)) %>%
-  ungroup() %>%
-  select(id, polls, l_polls, l_polls_week)
+  mutate(id = paste(date, party, sep = "."))
+
+polls <-slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls1", slideBy = -1) 
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls2", slideBy = -2) 
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls3", slideBy = -3) 
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls4", slideBy = -4)  
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls5", slideBy = -5) 
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls6", slideBy = -6) 
+polls <- slide(data = polls, Var = "polls", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_polls7", slideBy = -7) 
+polls <- polls %>%
+  mutate(l_polls_mean = ifelse(is.na(l_polls1), NA,
+                      ifelse(is.na(l_polls2), l_polls1,
+                      ifelse(is.na(l_polls3), (l_polls1 + l_polls2)/2,
+                      ifelse(is.na(l_polls4), 
+                             (l_polls1 + l_polls2 + l_polls3)/3,
+                      ifelse(is.na(l_polls5), 
+                             (l_polls1 + l_polls2 + l_polls3 +
+                                l_polls4)/4,
+                      ifelse(is.na(l_polls6), 
+                             (l_polls1 + l_polls2 + l_polls3 +
+                                l_polls4 + l_polls5)/5,
+                      ifelse(is.na(l_polls7), 
+                             (l_polls1 + l_polls2 + l_polls3 +
+                                l_polls4 + l_polls5 + l_polls6)/6,
+                             (l_polls1 + l_polls2 + l_polls3 +
+                                l_polls4 + l_polls5 + l_polls6 +
+                                l_polls7)/7)))))))) %>%
+  select(id, polls, l_polls1, l_polls7,  l_polls_mean)
 
 d <- left_join(d, polls, by = "id") %>%
   mutate(seats = ifelse(party=="FvD", 0, seats),
          poll_standing1 = round(polls/seats,2),
-         poll_standing2 = round(l_polls/seats,2),
-         poll_standing3 = round(l_polls_week/seats,2),
-         poll_standing4 = round(polls/l_polls, 2),
-         poll_standing5 = round(polls/l_polls_week, 2),
-         poll_standing6 = round(l_polls/l_polls_week, 2),
-         poll_standing1 = ifelse(seats==0, polls, poll_standing1),
-         poll_standing2 = ifelse(polls==0, polls, poll_standing2),
-         poll_standing3 = ifelse(polls==0, polls, poll_standing3),
-         poll_standing4 = ifelse(polls==0, polls, poll_standing4),
-         poll_standing5 = ifelse(polls==0, polls, poll_standing5),
-         poll_standing6 = ifelse(polls==0, polls, poll_standing6))
+         poll_standing2 = round(l_polls1/seats,2),
+         poll_standing3 = round(l_polls7/seats,2),
+         poll_standing4 = round(l_polls_mean/seats,2),
+         poll_standing5 = round(polls/l_polls1, 2),
+         poll_standing6 = round(polls/l_polls7, 2),
+         poll_standing7 = round(polls/l_polls_mean, 2),
+         poll_standing8 = round(l_polls1/l_polls7, 2),
+         poll_standing9 = round(l_polls1/l_polls_mean, 2))
 
 rm(polls)
 ```
