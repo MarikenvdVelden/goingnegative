@@ -37,12 +37,83 @@ Load manually annotated data - for a validation excercise see
 
 ``` r
 d <- read_csv("../../data/raw/coded-data-NL-2017-campaign.csv") %>%
-  mutate(in_opposition = ifelse(party == "VVD", 0,
+  mutate(id = paste(date, party, sep = "."))
+
+table(d$date, d$party)
+```
+
+| /          | 50PLUS | CDA | CU | D66 | FvD | GL | PvdA | PvdD | PVV | SGP | SP | VVD |
+| :--------- | -----: | --: | -: | --: | --: | -: | ---: | ---: | --: | --: | -: | --: |
+| 2017-02-15 |      0 |   3 |  0 |  11 |   0 |  0 |    2 |    4 |   1 |   0 | 14 |   0 |
+| 2017-02-16 |      0 |  28 |  3 |   5 |   7 |  2 |    0 |    6 |   0 |   0 | 15 |  21 |
+| 2017-02-17 |      5 |  15 | 12 |  22 |   0 |  4 |   11 |   30 |   0 |   8 |  4 |   6 |
+| 2017-02-18 |      0 |   2 |  1 |   0 |  10 | 12 |    0 |    0 |   7 |   0 |  1 |   1 |
+| 2017-02-19 |      2 |   8 |  0 |   0 |   0 |  0 |   12 |    4 |   0 |   0 |  0 |   0 |
+| 2017-02-20 |      0 |   0 |  0 |   6 |  18 |  0 |   10 |    6 |   1 |   0 |  5 |   6 |
+| 2017-02-21 |      0 |   9 |  3 |   2 |   4 |  0 |    0 |    1 |   0 |   0 |  9 |   0 |
+| 2017-02-22 |      4 |   0 |  0 |   3 |   0 |  4 |    4 |   18 |   0 |   1 |  0 |   0 |
+| 2017-02-23 |      1 |   3 |  0 |  10 |   0 |  0 |    0 |    4 |   0 |   1 |  5 |   0 |
+| 2017-02-24 |      0 |   2 |  0 |   6 |   4 |  0 |    4 |    8 |   0 |   7 | 15 |   0 |
+| 2017-02-25 |      0 |   1 |  1 |   0 |   3 |  3 |    4 |    2 |   2 |   0 |  1 |   0 |
+| 2017-02-26 |      0 |   8 |  0 |  10 |   0 |  0 |    0 |    2 |   1 |   1 | 10 |   1 |
+| 2017-02-27 |      8 |   2 |  0 |   0 |   0 |  0 |    0 |    2 |   0 |   0 | 15 |   2 |
+| 2017-02-28 |      6 |   6 |  0 |   6 |   9 |  5 |    0 |   16 |   0 |   1 |  8 |   0 |
+| 2017-03-01 |      0 |  18 |  0 |   5 |   3 |  6 |    0 |    3 |   3 |   2 | 11 |   0 |
+| 2017-03-02 |      4 |  14 |  2 |   1 |   7 |  3 |   30 |    4 |   0 |   6 |  8 |   8 |
+| 2017-03-03 |      0 |   1 |  1 |   1 |   3 | 23 |    4 |    4 |   0 |   7 |  7 |  11 |
+| 2017-03-04 |      2 |   6 |  1 |   3 |   2 |  0 |    0 |   18 |   0 |   5 |  5 |   0 |
+| 2017-03-05 |      0 |   0 |  0 |   0 |   4 |  7 |    3 |    7 |   0 |   0 |  3 |   0 |
+| 2017-03-06 |      3 |  26 |  4 |  13 |   0 |  9 |    0 |    4 |   3 |  17 |  1 |  13 |
+| 2017-03-07 |      0 |   5 |  0 |   5 |   9 | 10 |    0 |    6 |   0 |   6 | 15 |   3 |
+| 2017-03-08 |      2 |   4 |  1 |   4 |   1 |  2 |    3 |    6 |   0 |   3 | 11 |   0 |
+| 2017-03-09 |      2 |  10 |  0 |   8 |   1 | 19 |    6 |    2 |   1 |   0 | 14 |  11 |
+| 2017-03-10 |      2 |   3 |  4 |   0 |  13 |  0 |    1 |    3 |   2 |   0 |  6 |   4 |
+| 2017-03-11 |      3 |   3 |  1 |   2 |  10 |  0 |   25 |    4 |   0 |   7 |  1 |  16 |
+| 2017-03-12 |      3 |   0 |  0 |   5 |   1 |  2 |    0 |    3 |   6 |   0 |  2 |   5 |
+| 2017-03-13 |      4 |  16 |  0 |  22 |   4 | 13 |    0 |    9 |   0 |   9 |  5 |   3 |
+| 2017-03-14 |      4 |  10 | 10 |   7 |   4 | 11 |    7 |   16 |   1 |  11 | 24 |  15 |
+
+Not all parties are present at all days of the month, indicated by value
+`0` in the table. We ensure that all days in the 2017 campaign period
+are present in our data, for the purpose of times-series cross-sectional
+analyses.
+
+``` r
+df <- expand_grid(date = seq(as.Date("2017/02/15"), 
+                             as.Date("2017/03/14"), by = "day"),
+                  party = c("50PLUS", "CDA", "CU", "D66", "FvD", "GL",
+                            "PvdA", "PvdD", "PVV", "SGP", "SP", 
+                            "VVD")) %>%
+  mutate(id = paste(date, party, sep = "."))
+
+d <- left_join(df, d, by = "id") %>%
+  select(id, date = date.x, party = party.x, medium, source, cmp_code,
+         text_appeal, issue, direction_appeal) %>%
+  mutate(direction_appeal = replace_na(direction_appeal, "No Appeal"),
+         medium = replace_na(medium, " "),
+         source = replace_na(source, " "),
+         text_appeal = replace_na(text_appeal, " "),
+         issue = replace_na(issue, "None"),
+         in_opposition = ifelse(party == "VVD", 0,
                          ifelse(party == "PvdA", 0, 1)),
          new_party = ifelse(party == "FvD", 1, 0),
-         journalistic_intervenience = ifelse(medium=="Facebook", 0,
-                                      ifelse(medium=="Newspapers", 1, 0.5)),
-         id = paste(date, party, sep = "."))
+         journalistic_intervenience = ifelse(medium=="TV-shows", .5,
+                                      ifelse(medium=="Newspapers", 1,
+                                             0)),
+         cmp_code = ifelse(party == "50PLUS", 22953,
+                    ifelse(party == "GL", 22110,
+                    ifelse(party == "SP", 22220,
+                    ifelse(party == "PvdA", 22320,
+                    ifelse(party == "D66", 22330,
+                    ifelse(party == "VVD", 22420,
+                    ifelse(party == "CDA", 22521,
+                    ifelse(party == "CU", 22526,
+                    ifelse(party == "PVV", 22722,
+                    ifelse(party == "PvdD", 22951,
+                    ifelse(party == "SGP", 22952,
+                    ifelse(party == "FvD", 22730, cmp_code)))))))))))))
+
+rm(df)
 ```
 
 ### Ideological Extremity: CHES and Manifesto Project
@@ -249,8 +320,10 @@ d <- left_join(d, polls, by = "id") %>%
   mutate(seats = ifelse(party=="FvD", 0, seats),
          polls = ifelse(party=="FvD" & date=="2017-02-15", 0,
                  ifelse(party=="FvD" & date=="2017-02-16", 0, polls)),
-         poll_standing1 = ifelse(party=="FvD", polls, round(polls/seats,2)),
-         poll_standing2 = ifelse(party=="FvD", polls,round(l_polls1/seats,2)),
+         poll_standing1 = ifelse(party=="FvD", polls,
+                                 round(polls/seats,2)),
+         poll_standing2 = ifelse(party=="FvD",
+                                 polls,round(l_polls1/seats,2)),
          poll_standing3 = ifelse(party=="FvD", polls,
                                  round(l_polls7/seats,2)),
          poll_standing4 = ifelse(party=="FvD", polls,
@@ -342,7 +415,7 @@ aio <- aio %>%
 
 d <- d %>%
   mutate(associate_io = ifelse(issue==associated_issue,1,0),
-         id = paste(party, issue, sep = "-")) 
+         id = paste(party, issue, sep = "-"))
 d <- left_join(d, aio, by = "id") %>%
   mutate(aio_percentage = replace_na(aio_percentage, 0))
 rm(aio, associate_io)
@@ -514,15 +587,13 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ## Visualization of Data
 
-![](prep_data_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+![](prep_data_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
 
 ### Dependent Variable
 
-![](prep_data_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](prep_data_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ### Independent Variable
-
-![](prep_data_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
 
@@ -530,10 +601,12 @@ save(d, file = "../../data/intermediate/cleaned_data.RData")
 
 ![](prep_data_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
 
+![](prep_data_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+
 ### Control Variables
 
-![](prep_data_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
+![](prep_data_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
 
 ### Correlations Matrix
 
-![](prep_data_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](prep_data_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->

@@ -12,6 +12,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(printr)
 library(rmarkdown)
+library(here)
 ```
 
 # Scripts
@@ -30,19 +31,57 @@ rm(list=ls())
 
 renv::snapshot()
 
-source("../lib/functions.R")
+source(here("lib/functions.R"))
 ```
 
 ## Tidy Data
 Load manually annotated data - for a validation excercise see [here](../../n) - and create variables for being in opposition (`in_opposition`) and whether the party is a newly founded party (`new_party`).
 ```{r}
-d <- read_csv("../../data/raw/coded-data-NL-2017-campaign.csv") %>%
-  mutate(in_opposition = ifelse(party == "VVD", 0,
+d <- read_csv(here("data/raw/coded-data-NL-2017-campaign.csv")) %>%
+  mutate(id = paste(date, party, sep = "."))
+
+table(d$date, d$party)
+```
+
+Not all parties are present at all days of the month, indicated by value `0` in the table.
+We ensure that all days in the 2017 campaign period are present in our data, for the purpose of times-series cross-sectional analyses. 
+
+```{r}
+df <- expand_grid(date = seq(as.Date("2017/02/15"), 
+                             as.Date("2017/03/14"), by = "day"),
+                  party = c("50PLUS", "CDA", "CU", "D66", "FvD", "GL",
+                            "PvdA", "PvdD", "PVV", "SGP", "SP", 
+                            "VVD")) %>%
+  mutate(id = paste(date, party, sep = "."))
+
+d <- left_join(df, d, by = "id") %>%
+  select(id, date = date.x, party = party.x, medium, source, cmp_code,
+         text_appeal, issue, direction_appeal) %>%
+  mutate(direction_appeal = replace_na(direction_appeal, "No Appeal"),
+         medium = replace_na(medium, " "),
+         source = replace_na(source, " "),
+         text_appeal = replace_na(text_appeal, " "),
+         issue = replace_na(issue, "None"),
+         in_opposition = ifelse(party == "VVD", 0,
                          ifelse(party == "PvdA", 0, 1)),
          new_party = ifelse(party == "FvD", 1, 0),
-         journalistic_intervenience = ifelse(medium=="Facebook", 0,
-                                      ifelse(medium=="Newspapers", 1, 0.5)),
-         id = paste(date, party, sep = "."))
+         journalistic_intervenience = ifelse(medium=="TV-shows", .5,
+                                      ifelse(medium=="Newspapers", 1,
+                                             0)),
+         cmp_code = ifelse(party == "50PLUS", 22953,
+                    ifelse(party == "GL", 22110,
+                    ifelse(party == "SP", 22220,
+                    ifelse(party == "PvdA", 22320,
+                    ifelse(party == "D66", 22330,
+                    ifelse(party == "VVD", 22420,
+                    ifelse(party == "CDA", 22521,
+                    ifelse(party == "CU", 22526,
+                    ifelse(party == "PVV", 22722,
+                    ifelse(party == "PvdD", 22951,
+                    ifelse(party == "SGP", 22952,
+                    ifelse(party == "FvD", 22730, cmp_code)))))))))))))
+
+rm(df)
 ```
 
 ### Ideological Extremity: CHES and Manifesto Project
@@ -223,8 +262,10 @@ d <- left_join(d, polls, by = "id") %>%
   mutate(seats = ifelse(party=="FvD", 0, seats),
          polls = ifelse(party=="FvD" & date=="2017-02-15", 0,
                  ifelse(party=="FvD" & date=="2017-02-16", 0, polls)),
-         poll_standing1 = ifelse(party=="FvD", polls, round(polls/seats,2)),
-         poll_standing2 = ifelse(party=="FvD", polls,round(l_polls1/seats,2)),
+         poll_standing1 = ifelse(party=="FvD", polls,
+                                 round(polls/seats,2)),
+         poll_standing2 = ifelse(party=="FvD",
+                                 polls,round(l_polls1/seats,2)),
          poll_standing3 = ifelse(party=="FvD", polls,
                                  round(l_polls7/seats,2)),
          poll_standing4 = ifelse(party=="FvD", polls,
@@ -249,7 +290,7 @@ We measure associative issue ownership with the question _Which issue comes to y
 For each question, associative issue ownership variables will be measured by summation over the respondents and calculating in percentages how many of the respondents associate an issue with a party.
 
 ```{r}
-aio <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
+aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
@@ -311,7 +352,7 @@ aio <- aio %>%
 
 d <- d %>%
   mutate(associate_io = ifelse(issue==associated_issue,1,0),
-         id = paste(party, issue, sep = "-")) 
+         id = paste(party, issue, sep = "-"))
 d <- left_join(d, aio, by = "id") %>%
   mutate(aio_percentage = replace_na(aio_percentage, 0))
 rm(aio, associate_io)
@@ -324,7 +365,7 @@ For each question, the compentence issue ownership variables will be measured by
 Negative figures imply that more people disagree with the position of the party than people have agreed with the position of the party.
 
 ```{r}
-data <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
+data <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   zap_labels()
 
 for(i in 1:19){
@@ -472,7 +513,7 @@ rm(cio)
 
 ## Save Data for Analysis
 ```{r}
-save(d, file = "../../data/intermediate/cleaned_data.RData")
+save(d, file = here("data/intermediate/cleaned_data.RData"))
 ```
 
 ## Visualization of Data
@@ -484,6 +525,7 @@ rm(tmp)
 
 d %>%
   select(party, source, medium,direction_appeal, n) %>%
+  filter(direction_appeal != "No Appeal") %>%
   group_by(party, source, medium,direction_appeal) %>%
   summarise(tot = n(),
             perc = tot/n) %>%
@@ -509,6 +551,7 @@ d %>%
 ```{r, echo=F}
 d %>%
   select(direction_appeal, party) %>%
+  filter(direction_appeal != "No Appeal") %>%
   group_by(direction_appeal, party) %>%
   summarise(n = n(),
             perc = n/dim(d)[1]) %>%
@@ -527,6 +570,7 @@ d %>%
 ### Independent Variable
 ```{r, echo=F, message=FALSE, warning=FALSE}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(journalistic_intervenience,party) %>%
   group_by(journalistic_intervenience, party) %>%
   summarise(n = n(),
@@ -554,6 +598,7 @@ d %>%
 
 ```{r, echo=F, message=FALSE, warning=FALSE}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(party, poll_standing1:poll_standing9) %>%
   distinct(party, .keep_all = T) %>%
   pivot_longer(cols = poll_standing1:poll_standing9,
@@ -585,6 +630,7 @@ d %>%
 
 ```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(party, issue, aio_percentage, cio_mean:cio_sd) %>%
   drop_na() %>%
   pivot_longer(cols = aio_percentage:cio_sd,
@@ -612,6 +658,7 @@ d %>%
 
 ```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=7}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(party,ie_median_ches2017:ie_median_cmp2012) %>%
   mutate(ie_mean_cmp2017 = ie_mean_cmp2017/10,
          ie_median_cmp2017 = ie_median_cmp2017/10,
@@ -649,6 +696,7 @@ d %>%
 
 ```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=7}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(`Being in Opposition` = in_opposition, 
          `New Party` = new_party,
          party) %>%
@@ -672,6 +720,7 @@ d %>%
 ### Correlations Matrix
 ```{r, echo=F, message=T, warning=T, fig.width=15, fig.height=15}
 d %>%
+  filter(direction_appeal != "No Appeal") %>%
   select(`Appeals made by Parties` = direction_appeal,
          `Journalistic Intervenience` = journalistic_intervenience,
          `Standing in the Polls (1)`  = poll_standing1,

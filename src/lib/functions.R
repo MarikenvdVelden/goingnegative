@@ -6,10 +6,10 @@ library(haven)
 library(broom)
 library(scales)
 library(viridis)
-library(plm)
-library(multiverse)
+library(tscount)
+library(specr)
 library(DataCombine)
-library(ggridges)
+library(lme4)
 
 get_cio <- function(data, var1, var2, var3, var4, issue, party){
   df <- data %>%
@@ -39,3 +39,12 @@ get_cio <- function(data, var1, var2, var3, var4, issue, party){
     ungroup()
   return(df)
 }
+
+# specific model fitting function
+lmer_mv <- function(formula, data,...) {
+  require(lme4)
+  require(broom.mixed)
+  formula <- paste(formula, "+ (1|party) + (1|date)")
+  lmer(formula, data)
+}
+
