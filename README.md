@@ -24,12 +24,4 @@ See the files in [src/data-processing](src/data-processing/README.md) for detail
 
 ## Results as presented in the paper
 
-* [Performance, learning curve, correlations](src/analysis/performance.md)
-
-## Supplementary Results
-
-* [Confusion Matrices of all methods](src/analysis/confusion_matrix.md)
-* [Grid Search for CNN](src/analysis/cnn_gridsearch.md) (code: [30_cnn_gridsearch.py](src/data-processing/30_cnn_gridsearch.py)
-* [Grid Search for SVM](src/analysis/svm_gridsearch.md) (code: [19_svm_gridsearch.py](src/data-processing/19_svm_gridsearch.py)
-* [Validation of ML results against student codings](src/analysis/ml_versus_students.md)
-* [Error analysis](src/analysis/error_analysis.md)
+* [Multiverse Analyses](src/analysis/analysis.md)
