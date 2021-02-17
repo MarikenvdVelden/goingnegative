@@ -31,16 +31,13 @@ source("../lib/functions.R")
 ```
 
 ## Analysis
-mean: standartdization + 1 stdev above and beyond
-```{r}
+```{r "data for analyses"}
 load("../data/intermediate/cleaned_data.RData")
 df <- d %>%
   mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
                                   1,0)) %>%
   group_by(party, date) %>%
   summarise(negative_appeals = n(),
-            m_na = mean(negative_appeal, na.rm = T),
-            d_na = negative_appeals - m_na,
             polls1 = mean(poll_standing1, na.rm = T),
             polls2 = mean(poll_standing2, na.rm = T),
             polls3 = mean(poll_standing3, na.rm = T),
@@ -79,15 +76,13 @@ df <- d %>%
 df <- slide(data = df, Var = "negative_appeals", TimeVar = "date",
                GroupVar = "party", NewVar = "l_negative_appeal", 
             slideBy = -1)
-
-df <- df %>%
-  mutate(d_negative_appeal = negative_appeals - l_negative_appeal) 
 ```
 
+## Gesrpek kasper: glmer neg_appeals = ldv + rest: possion of neg.bin
 
-```{r}
-results <- run_specs(df = df,
-                      y = c("d_na"),
+```{r "h1"}
+h1 <- run_specs(df = df,
+                      y = c("negative_appeals"),
                       x = c("ji1", "ji2", "ji3"),
                       controls = c("polls1","polls2","polls3","polls4",
                                   "polls5","polls6","polls7","polls8",
@@ -95,8 +90,80 @@ results <- run_specs(df = df,
                                   "ie1","ie2","ie3","ie4","ie5","ie6",
                                   "ie7","ie8",
                                   "io1","io2","io3","io4"),
-                      model = "lmer_mv")
-plot_specs(results)
+                      model = "glmer_mv")
+
+results %>%  
+  mutate(id = 1:69,
+         x = recode(x, 
+                    `ji1` = "Daily Average of Journalistic Intervention",
+                    `ji2` = "Sum of Daily Journalistic Intervention",
+                    `ji3` = "Deviation from Daily Average Journalistic Intervention")) %>%
+  ggplot(aes(x = reorder(id, estimate),
+             y = estimate,
+             group = id,
+             colour = x,
+             ymin = conf.low,
+             ymax = conf.high)) +
+  geom_point() + geom_errorbar() +
+  theme_minimal() +
+  labs(x = "", y = "Estimate",
+       title = "Effect of Journalistic Intervenience on \u0394 Negative Appeals",
+       subtitle = "Controlled for Standing in Polls, Ideological Extremity and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        legend.position="bottom",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
+```
+
+```{r "h2"}
+df <- df %>%
+  mutate(group1 = ifelse(ji1<=.2, 0,
+                  ifelse(ji1>.2 & ji1<=.5, 1, 2)),
+         group2 = ifelse(ji2<=.5, 0,
+                  ifelse(ji2>.5 & ji2<=3, 1, 2)),
+         group3 = ifelse(ji3<=.5, 0,
+                  ifelse(ji3>.5 & ji3<=3, 1, 2)))
+
+#Do for each group
+h2_1 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                      controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group1)))
+
+h3 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                      controls = c("ji1", "ji2", "ji3",
+                                   "polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv") #MAKE GROUPS
+
+h4 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("io1","io2","io3","io4"),
+                      controls = c("ji1", "ji2", "ji3",
+                                   "polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                      model = "glmer_mv",
+                     subsets = list(group1 = unique(df$group1))) 
 
 ```
 
