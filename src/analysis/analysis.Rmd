@@ -142,7 +142,35 @@ h2_1 <- run_specs(df = df,
                       model = "glmer_mv",
                   subsets = list(group1 = unique(df$group1)))
 
-h3 <- run_specs(df = df,
+h2_2 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                      controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group2)))
+
+h2_3 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                      controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group3)))
+
+h2_1 <- h2_1 %>% mutate(id = "ji1")
+h2_2 <- h2_2 %>% mutate(id = "ji2")
+h2_3 <- h2_3 %>% mutate(id = "ji3")
+
+h2 <- h2_1 %>% add_row(h2_2) %>% add_row(h2_3)
+
+h3_1 <- run_specs(df = df,
                       y = c("negative_appeals"),
                       x = c("ie1","ie2","ie3","ie4","ie5","ie6",
                                   "ie7","ie8"),
