@@ -26,20 +26,23 @@ source("../lib/functions.R")
 ``` r
 load("../../data/intermediate/cleaned_data.RData")
 df <- d %>%
-  mutate(direction_appeal = recode(direction_appeal,
-                                   `Negative Appeal` = 1,
-                                   `Positive Appeal` = 0),) %>%
-  group_by(date, party) %>%
-  summarise(direction_appeal = sum(direction_appeal),
-            polls  = mean(polls, na.rm = T),
-            l_polls1 = mean(l_polls1, na.rm = T),
-            l_polls7 = mean(l_polls7, na.rm = T),
-            l_polls_mean = mean(l_polls_mean, na.rm = T),
-            seats = mean(seats, na.rm = T),
-            aio = mean(aio_percentage, na.rm = T),
-            cio1 = mean(cio_mean, na.rm = T),
-            cio2 = mean(cio_median, na.rm = T),
-            cio3 = mean(cio_sd, na.rm = T),
+  mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
+                                  1,0)) %>%
+  group_by(party, date) %>%
+  summarise(negative_appeals = n(),
+            polls1 = mean(poll_standing1, na.rm = T),
+            polls2 = mean(poll_standing2, na.rm = T),
+            polls3 = mean(poll_standing3, na.rm = T),
+            polls4 = mean(poll_standing4, na.rm = T),
+            polls5 = mean(poll_standing5, na.rm = T),
+            polls6 = mean(poll_standing6, na.rm = T),
+            polls7 = mean(poll_standing7, na.rm = T),
+            polls8 = mean(poll_standing8, na.rm = T),
+            polls9 = mean(poll_standing9, na.rm = T),
+            io1 = mean(aio_percentage, na.rm = T),
+            io2 = mean(cio_mean, na.rm = T),
+            io3 = mean(cio_median, na.rm = T),
+            io4 = mean(cio_sd, na.rm = T),
             ie1 = mean(ie_median_ches2017, na.rm = T),
             ie2 = mean(ie_mean_ches2017, na.rm = T),
             ie3 = mean(ie_median_ches2014, na.rm = T),
@@ -48,249 +51,314 @@ df <- d %>%
             ie6 = mean(ie_mean_cmp2017, na.rm = T),
             ie7 = mean(ie_median_cmp2012, na.rm = T),
             ie8 = mean(ie_mean_cmp2012, na.rm = T),
-            journalistic_intervenience  = mean(journalistic_intervenience, na.rm = T)
+            ji1  = mean(journalistic_intervenience, na.rm = T),
+            ji2 = sum(journalistic_intervenience),
+            ji3 = ji2-ji1
             ) %>%
   mutate(opposition = ifelse(party == "VVD", 0,
                       ifelse(party == "PvdA", 0, 1)),
-         new_party = ifelse(party == "FvD", 1, 0)
-         )  %>%
+         new_party = ifelse(party == "FvD", 1, 0),
+         ie3 = ifelse(party == "FvD", 0, ie3),
+         ie4 = ifelse(party == "FvD", 0, ie4),
+         ie7 = ifelse(party == "FvD", 0, ie7),
+         ie8 = ifelse(party == "FvD", 0, ie8),
+         group1 = ifelse(ji1<=.2, 0,
+                  ifelse(ji1>.2 & ji1<=.5, 1, 2)),
+         group2 = ifelse(ji2<=.5, 0,
+                  ifelse(ji2>.5 & ji2<=3, 1, 2)),
+         group3 = ifelse(ji3<=.5, 0,
+                  ifelse(ji3>.5 & ji3<=3, 1, 2))) %>%
   ungroup()
 
-df <- df %>%
-  drop_na(-ie3, -ie4, -ie7, -ie8) 
+df <- slide(data = df, Var = "negative_appeals", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_negative_appeal", 
+            slideBy = -1)
 ```
 
-### Specifying the Multiverse
-
 ``` r
-M <- multiverse()
+h1 <- run_specs(df = df,
+                      y = c("negative_appeals"),
+                      x = c("ji1", "ji2", "ji3"),
+                      controls = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv")
 
-inside(M, {
-data <- df  %>%
-    mutate(
-      new_party = branch(np,
-            "np_option" ~  ifelse(party=="FvD", 1, 0)),
-      polls = branch(polls_calculation,
-            "p_option1" ~ ifelse(party=="FvD", polls, round(polls/seats,2)),
-            "p_option2" ~ ifelse(party=="FvD", polls, round(l_polls1/seats,2)),
-            "p_option3" ~ ifelse(party=="FvD", polls, round(l_polls7/seats,2)),
-            "p_option4" ~ ifelse(party=="FvD", polls, round(l_polls_mean/seats,2)),
-            "p_option5" ~ ifelse(party=="FvD", polls, round(polls/l_polls1,2)),
-            "p_option6" ~ ifelse(party=="FvD", polls, round(polls/l_polls7,2)),
-            "p_option7" ~ ifelse(party=="FvD", polls, round(polls/l_polls_mean,2)),
-            "p_option8" ~ ifelse(party=="FvD", polls, round(l_polls1/l_polls7,2)),
-            "p_option9" ~ ifelse(party=="FvD", polls, round(l_polls1/l_polls_mean,2)))
-           ) %>%
-  mutate(ie = branch(ie_calculation,
-            "ie_option1" ~ ie1,
-            "ie_option2" ~ ie2,
-            "ie_option3" %when% (np != "np_option1") ~ ie3,
-            "ie_option4" %when% (np != "np_option1") ~ ie4,
-            "ie_option5" ~ ie5,
-            "ie_option6" ~ ie6,
-            "ie_option7" %when% (np != "np_option1") ~ ie7,
-            "ie_option8" %when% (np != "np_option1") ~ ie8)
-         ) %>%
-  mutate(io = branch(io_calculation,
-            "io_option1" ~ aio,
-            "io_option2" ~ cio1,
-            "io_option3" ~ cio2,
-            "io_option4" ~ cio3)
-         )
-})
-
-n <- expand(M) %>% nrow()
-```
-
-### H1a
-
-``` r
-inside(M, {
-  fit_1 <- plm(direction_appeal ~ journalistic_intervenience + polls + ie1 + cio1 +
-                  factor(opposition) + factor(new_party), 
-                data=df, index=c("date"), model="within") 
-})
-
-inside(M, {
-  summary_fit_1 <- fit_1 %>% 
-    broom::tidy( conf.int = TRUE )
-})
-
-execute_multiverse(M)
-
-
-h1a <- expand(M) %>%
-  mutate( summary = map(.results, "summary_fit_1") ) %>%
-  unnest( cols = c(summary) ) %>%
-  filter( term != "(Intercept)" ) %>%
-  select(term, estimate, p.value) %>%
-  mutate(term = recode(term,
-                       `cio1` = "Issue Ownership",
-                       `factor(new_party)1` = "Being New Party",
-                       `factor(opposition)1` = "Being in Opposition",
-                       `ie1` = "Ideological Extremity",
-                       `journalistic_intervenience` = "Journalistic Intervenience",
-                       `polls` = "Standing in the Polls")) %>%
-  pivot_longer(cols = estimate:p.value,
-               names_to = "id") %>%
-  mutate(id = recode(id, `estimate` = "Estimate",
-                     `p.value` = "P-Value"))
-
-dummy2 <- data.frame(id = c("Estimate", "P-Value"), Z = c(1, 0.1))
-ggplot(h1a, aes(x = value, y = term, group = term)) +
-  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
-  facet_grid(cols = vars(id), scales = "free") +
+h1 %>%  
+  mutate(id = 1:69,
+         x = recode(x, 
+                    `ji1` = "Daily Average",
+                    `ji2` = "Daily Sum",
+                    `ji3` = "Deviation from Daily Average")) %>%
+  ggplot(aes(x = reorder(id, estimate),
+             y = estimate,
+             group = id,
+             colour = x,
+             ymin = conf.low,
+             ymax = conf.high)) +
+  geom_point() + geom_errorbar() +
   theme_minimal() +
-  labs(x = "", y = "", title = "Hypothesis 1a") +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-    geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = .8, colour = "#180F3EFF")
+  labs(x = "", y = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       title = "Effect of Journalistic Intervention on # Negative Appeals",
+       subtitle = "Controlled for Standing in Polls, Ideological Extremity and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position="bottom",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_hline(yintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=1,byrow=TRUE)) +
+  coord_flip()
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
-
-### H1b
+<img src="analysis_files/figure-gfm/h1-1.png" style="display: block; margin: auto;" />
 
 ``` r
-inside(M, {
-  fit_2 <- plm(direction_appeal ~ journalistic_intervenience*polls +
-                 ie1 + cio1 + factor(opposition) + factor(new_party),
-                data=df, index=c("date"), model="within") 
-})
+h2_1 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                  controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group1)))
 
-inside(M, {
-  summary_fit_2 <- fit_2 %>% 
-    broom::tidy( conf.int = TRUE )
-})
+h2_2 <- run_specs(df = df, 
+                  y = c("negative_appeals"),
+                  x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                  controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group2)))
 
-execute_multiverse(M)
+h2_3 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9"),
+                  controls = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8",
+                                  "io1","io2","io3","io4"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group3)))
 
+h2_1 <- h2_1 %>% 
+  mutate(id = "Daily Average",
+         id2 = 1:dim(h2_1)[1]) %>%
+  filter(subsets != "all")
+h2_2 <- h2_2 %>% 
+  mutate(id = "Daily Sum ",
+         id2 = 1:dim(h2_2)[1]) %>%
+  filter(subsets != "all")
+h2_3 <- h2_3 %>% 
+  mutate(id = "Deviation from Daily Average",
+         id2 = 1:dim(h2_3)[1]) %>%
+  filter(subsets != "all")
 
-h1b <- expand(M) %>%
-  mutate( summary = map(.results, "summary_fit_2") ) %>%
-  unnest( cols = c(summary) ) %>%
-  filter( term != "(Intercept)" ) %>%
-  select(term, estimate, p.value) %>%
-  mutate(term = recode(term,
-                       `cio1` = "Issue Ownership",
-                       `factor(new_party)1` = "Being New Party",
-                       `factor(opposition)1` = "Being in Opposition",
-                       `ie1` = "Ideological Extremity",
-                       `journalistic_intervenience` = "Journalistic Intervenience",
-                       `polls` = "Standing in the Polls",
-                       `journalistic_intervenience:polls` = 
-                         "Journalistic Intervenience * Polls")) %>%
-  pivot_longer(cols = estimate:p.value,
-               names_to = "id") %>%
-  mutate(id = recode(id, `estimate` = "Estimate",
-                     `p.value` = "P-Value"))
+h2 <- h2_1 %>% 
+  add_row(h2_2) %>% 
+  add_row(h2_3) %>%
+  mutate(subsets = recode(subsets,
+                          `group1 = 0` = "Journalistic Intervention: Low",
+                          `group1 = 1` = "Journalistic Intervention: Medium",
+                          `group1 = 2` = "Journalistic Intervention: High"),
+         subsets = factor(subsets,
+                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
 
-ggplot(h1b, aes(x = value, y = term, group = term)) +
-  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
-  facet_grid(cols = vars(id), scales = "free") +
-  theme_minimal() +
-  labs(x = "", y = "", title = "Hypothesis 1b") +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-    geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = .8, colour = "#180F3EFF")
+h2 %>%  
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = subsets,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + geom_errorbar() +
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       title = "Effect of Standing in the Polls on # Negative Appeals",
+       subtitle = "Controlled for Ideological Extremity and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
-
-### H2a
+<img src="analysis_files/figure-gfm/h2-1.png" style="display: block; margin: auto;" />
 
 ``` r
-inside(M, {
-  fit_3 <- plm(direction_appeal ~ journalistic_intervenience*cio1 + 
-                 polls + ie1 + 
-                 factor(opposition) + factor(new_party),
-                data=df, index=c("date"), model="within") 
-})
+h3_1 <- run_specs(df = df,
+                  y = c("negative_appeals"), 
+                  x = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                  controls = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "io1","io2","io3","io4"),
+                      model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group1))) 
 
-inside(M, {
-  summary_fit_3 <- fit_3 %>% 
-    broom::tidy( conf.int = TRUE )
-})
+h3_2 <- run_specs(df = df,
+                  y = c("negative_appeals"), 
+                  x = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                  controls = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "io1","io2","io3","io4"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group2))) 
 
-execute_multiverse(M)
+h3_3 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                  controls = c("polls1","polls2","polls3","polls4",
+                                  "polls5","polls6","polls7","polls8",
+                                  "polls9",
+                                  "io1","io2","io3","io4"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group3))) 
 
 
-h2a <- expand(M) %>%
-  mutate( summary = map(.results, "summary_fit_3") ) %>%
-  unnest( cols = c(summary) ) %>%
-  filter( term != "(Intercept)" ) %>%
-  select(term, estimate, p.value) %>%
-  mutate(term = recode(term,
-                       `cio1` = "Issue Ownership",
-                       `factor(new_party)1` = "Being New Party",
-                       `factor(opposition)1` = "Being in Opposition",
-                       `ie1` = "Ideological Extremity",
-                       `journalistic_intervenience` = "Journalistic Intervenience",
-                       `polls` = "Standing in the Polls",
-                       `journalistic_intervenience:cio1` = 
-                         "Journalistic Intervenience * Issue Ownership")) %>%
-  pivot_longer(cols = estimate:p.value,
-               names_to = "id") %>%
-  mutate(id = recode(id, `estimate` = "Estimate",
-                     `p.value` = "P-Value"))
+h3_1 <- h3_1 %>% 
+  mutate(id = "Daily Average",
+         id2 = 1:dim(h3_1)[1]) %>%
+  filter(subsets != "all")
+h3_2 <- h3_2 %>% 
+  mutate(id = "Daily Sum ",
+         id2 = 1:dim(h3_2)[1]) %>%
+  filter(subsets != "all")
+h3_3 <- h3_3 %>% 
+  mutate(id = "Deviation from Daily Average",
+         id2 = 1:dim(h3_3)[1]) %>%
+  filter(subsets != "all")
 
-ggplot(h2a, aes(x = value, y = term, group = term)) +
-  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
-  facet_grid(cols = vars(id), scales = "free") +
-  theme_minimal() +
-  labs(x = "", y = "", title = "Hypothesis 2a") +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-    geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = .8, colour = "#180F3EFF")
+h3 <- h3_1 %>% 
+  add_row(h3_2) %>% 
+  add_row(h3_3) %>%
+  mutate(subsets = recode(subsets,
+                          `group1 = 0` = "Journalistic Intervention: Low",
+                          `group1 = 1` = "Journalistic Intervention: Medium",
+                          `group1 = 2` = "Journalistic Intervention: High"),
+         subsets = factor(subsets,
+                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
+
+h3 %>%  
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = subsets,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + geom_errorbar() +
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       title = "Effect of Ideologically Extremity on # Negative Appeals",
+       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-6-1.png)<!-- -->
-
-### H2b
+<img src="analysis_files/figure-gfm/h3-1.png" style="display: block; margin: auto;" />
 
 ``` r
-inside(M, {
-  fit_4 <- plm(direction_appeal ~ journalistic_intervenience*ie1 + 
-                 polls + cio1 + 
-                 factor(opposition) + factor(new_party),
-                data=df, index=c("date"), model="within") 
-})
+h4_1 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("io1","io2","io3","io4"),
+                  controls = c("polls1", "polls2", "polls3", "polls4",
+                               "ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group1))) 
 
-inside(M, {
-  summary_fit_4 <- fit_4 %>% 
-    broom::tidy( conf.int = TRUE )
-})
+h4_2 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("io1","io2","io3","io4"),
+                  controls = c("polls1", "polls2", "polls3", "polls4",
+                               "ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),                  
+                  model = "glmer_mv",
+                  subsets = list(group1 = unique(df$group2))) 
 
-execute_multiverse(M)
+h4_3 <- run_specs(df = df,
+                  y = c("negative_appeals"),
+                  x = c("io1","io2","io3","io4"),
+                  controls = c("polls1", "polls2", "polls3", "polls4",
+                               "ie1","ie2","ie3","ie4","ie5","ie6",
+                                  "ie7","ie8"),
+                      model = "glmer_mv",
+                     subsets = list(group1 = unique(df$group3))) 
 
+h4_1 <- h4_1 %>% 
+  mutate(id = "Daily Average",
+         id2 = 1:dim(h4_1)[1]) %>%
+  filter(subsets != "all")
+h4_2 <- h4_2 %>% 
+  mutate(id = "Daily Sum ",
+         id2 = 1:dim(h4_2)[1]) %>%
+  filter(subsets != "all")
+h4_3 <- h4_3 %>% 
+  mutate(id = "Deviation from Daily Average",
+         id2 = 1:dim(h4_3)[1]) %>%
+  filter(subsets != "all")
 
-h2b <- expand(M) %>%
-  mutate( summary = map(.results, "summary_fit_4") ) %>%
-  unnest( cols = c(summary) ) %>%
-  filter( term != "(Intercept)" ) %>%
-  select(term, estimate, p.value) %>%
-  mutate(term = recode(term,
-                       `cio1` = "Issue Ownership",
-                       `factor(new_party)1` = "Being New Party",
-                       `factor(opposition)1` = "Being in Opposition",
-                       `ie1` = "Ideological Extremity",
-                       `journalistic_intervenience` = "Journalistic Intervenience",
-                       `polls` = "Standing in the Polls",
-                       `journalistic_intervenience:ie1` = 
-                         "Journalistic Intervenience * Ideological Extremity")) %>%
-  pivot_longer(cols = estimate:p.value,
-               names_to = "id") %>%
-  mutate(id = recode(id, `estimate` = "Estimate",
-                     `p.value` = "P-Value"))
+h4 <- h4_1 %>% 
+  add_row(h4_2) %>% 
+  add_row(h4_3) %>%
+  mutate(subsets = recode(subsets,
+                          `group1 = 0` = "Journalistic Intervention: Low",
+                          `group1 = 1` = "Journalistic Intervention: Medium",
+                          `group1 = 2` = "Journalistic Intervention: High"),
+         subsets = factor(subsets,
+                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
 
-ggplot(h2b, aes(x = value, y = term, group = term)) +
-  geom_density_ridges(scale = .5, alpha = 0.7, fill="#F1605DFF") +
-  facet_grid(cols = vars(id), scales = "free") +
-  theme_minimal() +
-  labs(x = "", y = "", title = "Hypothesis 2b") +
-  theme(plot.title = element_text(hjust = 0.5)) + 
-    geom_vline(data = dummy2, aes(xintercept = Z), 
-               linetype = "dashed", size = .8, colour = "#180F3EFF")
+h4 %>%  
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = subsets,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + geom_errorbar() +
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       title = "Effect of Issue Ownership  on # Negative Appeals",
+       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks.y=element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-![](analysis_files/figure-gfm/unnamed-chunk-7-1.png)<!-- -->
+<img src="analysis_files/figure-gfm/h4-1.png" style="display: block; margin: auto;" />
