@@ -586,22 +586,22 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 ## Visualization of Data
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Overview%20of%20Appeals%20per%20Medium-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Overview of Appeals per Medium-1.png" style="display: block; margin: auto;" />
 
 ### Dependent Variable
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Dependent%20Variable-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Dependent Variable-1.png" style="display: block; margin: auto;" />
 
 ### Independent Variable
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20JI-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - JI-1.png" style="display: block; margin: auto;" />
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20Polls-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - Polls-1.png" style="display: block; margin: auto;" />
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20IO-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - IO-1.png" style="display: block; margin: auto;" />
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20IE-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - IE-1.png" style="display: block; margin: auto;" />
 
 ### Correlations Matrix
 
-![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Correlations%20Matrix-1.png)<!-- -->
+<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Correlations Matrix-1.png" style="display: block; margin: auto;" />
