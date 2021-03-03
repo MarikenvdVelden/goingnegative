@@ -25,7 +25,7 @@ See [src/data-processing/prep_data.md](src/data-processing/prep_data.md) for det
 ## Results as presented in the paper
 
 * [Code](src/analysis/analysis.md) to conduct the multiverse analyses
-* [Figures](report/figures) to visualizing the descriptives and the results of the analyses 
+* [Figures](report/figures) visualizing the descriptives and the results of the analyses 
 
 ## Code of Conduct
 
