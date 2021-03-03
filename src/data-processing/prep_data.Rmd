@@ -36,6 +36,7 @@ source(here("src/lib/functions.R"))
 
 ## Tidy Data
 Load manually annotated data - for a validation excercise see [here](../../n) - and create variables for being in opposition (`in_opposition`) and whether the party is a newly founded party (`new_party`).
+
 ```{r "get handcoded data"}
 d <- read_csv(here("data/raw/coded-data-NL-2017-campaign.csv")) %>%
   mutate(id = paste(date, party, sep = "."))
