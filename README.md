@@ -7,25 +7,25 @@ No ethical approval was required for this study.
 View the [draft of the paper here](report/draft.pdf).
 
 ## Code
-The main analysis code is located in the [src/data-processing](src/data-processing/README.md). 
+The main analysis code is located in the [src/data-processing](src/data-processing/). 
 Of interest might be:
 
-* [prep_data.Rmd](src/data-processing/prep_data.md) Combine manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) 
+* [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the analysis.
 
 ## Data
 
 The following data files might be of interest:
 
-* [coded-data-NL-2017-campaign.csv](data/raw/coded-data-NL-2017-campaign.csv)
-* [cleaned_data.RData](data/intermediate/cleaned_data.RData) 
-* [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx)
+* [coded-data-NL-2017-campaign.csv](data/raw/coded-data-NL-2017-campaign.csv) Manually coded data by first author
+* [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx) Gold standard expert coding 
+* [cleaned_data.RData](data/intermediate/cleaned_data.RData) Data cleaned for the analyses
 
-See the files in [src/data-processing](src/data-processing/prep_data.md) for details on how these files were constructed.
+See [src/data-processing/prep_data.md](src/data-processing/prep_data.md) for details on how these files were constructed.
 
 ## Results as presented in the paper
 
-* [Multiverse Analyses](src/analysis/analysis.md)
-* [Figures](report/figures)
+* [Code](src/analysis/analysis.md) to conduct the multiverse analyses
+* [Figures](report/figures) to visualizing the descriptives and the results of the analyses 
 
 ## Code of Conduct
 
