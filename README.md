@@ -10,7 +10,7 @@ View the [draft of the paper here](report/draft.pdf).
 The main analysis code is located in the [src/data-processing](src/data-processing/). 
 Of interest might be:
 
-* [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the analysis.
+* [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the [analysis](src/analysis/analysis.md).
 
 ## Data
 
@@ -20,7 +20,6 @@ The following data files might be of interest:
 * [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx) Gold standard expert coding 
 * [cleaned_data.RData](data/intermediate/cleaned_data.RData) Data cleaned for the analyses
 
-See [src/data-processing/prep_data.md](src/data-processing/prep_data.md) for details on how these files were constructed.
 
 ## Results as presented in the paper
 
