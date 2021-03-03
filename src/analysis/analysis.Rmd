@@ -8,32 +8,27 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+```{r "setup", include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.align = "center",
+                      fig.path=('../../report/figures/'))
 library(printr)
+options(digits = 2)
 library(rmarkdown)
 library(here)
 ```
 
 # Scripts
-- [Required Packages &amp; Reproducibility](#required-packages-&amp;-reproducibility)
-- [Analysis](#analysis)
-  - [Specifying the Multiverse](#specifiying-the-multiverse)
-  - [H1a](#H1a)
-  - [H1b](#H1b)
-  - [H2a](#H2a)
-  - [H2b](#H2b)
   
-## Required Packages &amp; Reproducibility
-```{r, message=FALSE, warning=F}
+# Required Packages &amp; Reproducibility
+```{r "env", message=FALSE, warning=F}
 rm(list=ls())
-
-source(here("lib/functions.R"))
+source(here("src/lib/functions.R"))
 ```
 
-## Analysis
+# Analysis
 ```{r "data for analyses"}
-load(here("../../data/intermediate/cleaned_data.RData"))
+load(here("data/intermediate/cleaned_data.RData"))
 
 df <- d %>%
   mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
@@ -85,7 +80,7 @@ df <- slide(data = df, Var = "negative_appeals", TimeVar = "date",
             slideBy = -1)
 ```
 
-
+## H1 Direct Effect of Journalistic Control on Negative Appeals
 ```{r "h1", fig.align="center", fig.height=8, fig.width=8}
 h1 <- run_specs(df = df,
                       y = c("negative_appeals"),
@@ -128,6 +123,7 @@ h1 %>%
   coord_flip()
 ```
 
+## H2 Interaction Effect of Polls with Journalistic Control on Negative Appeals
 ```{r "h2", fig.align="center", fig.height=8, fig.width=8}
 h2_1 <- run_specs(df = df,
                   y = c("negative_appeals"),
@@ -209,6 +205,7 @@ h2 %>%
   guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
+## H3 Interaction Effect of Ideological Extremity with Journalistic Control on Negative Appeals
 ```{r "h3", fig.align="center", fig.height=8, fig.width=8}
 h3_1 <- run_specs(df = df,
                   y = c("negative_appeals"), 
@@ -291,6 +288,7 @@ h3 %>%
   guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
+## H4 Interaction Effect of Issue Ownership with Journalistic Control on Negative Appeals
 ```{r "h4", fig.align="center", fig.height=8, fig.width=8}
 h4_1 <- run_specs(df = df,
                   y = c("negative_appeals"),
