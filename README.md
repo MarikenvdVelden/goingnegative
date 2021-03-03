@@ -1,6 +1,6 @@
 # When the cat’s away, the mice will play. How journalistic control influences political parties' decision to go negative
 
-Data &amp; Analysis Compendium for the When the cat’s away, the mice will play. How journalistic control influences political parties' decision to go negative paper. 
+Data &amp; Analysis Compendium for the _When the cat’s away, the mice will play. How journalistic control influences political parties' decision to go negative_ paper. 
 No ethical approval was required for this study.
 
 ## Draft
