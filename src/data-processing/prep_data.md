@@ -586,22 +586,22 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 ## Visualization of Data
 
-![](report/figures/Overview%20of%20Appeals%20per%20Medium-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Overview%20of%20Appeals%20per%20Medium-1.png)<!-- -->
 
 ### Dependent Variable
 
-![](report/figures/Dependent%20Variable-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Dependent%20Variable-1.png)<!-- -->
 
 ### Independent Variable
 
-![](report/figures/Independent%20Variables%20-%20JI-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20JI-1.png)<!-- -->
 
-![](report/figures/Independent%20Variables%20-%20Polls-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20Polls-1.png)<!-- -->
 
-![](report/figures/Independent%20Variables%20-%20IO-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20IO-1.png)<!-- -->
 
-![](report/figures/Independent%20Variables%20-%20IE-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent%20Variables%20-%20IE-1.png)<!-- -->
 
 ### Correlations Matrix
 
-![](report/figures/Correlations%20Matrix-1.png)<!-- -->
+![](/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Correlations%20Matrix-1.png)<!-- -->
