@@ -4,6 +4,21 @@ Dirck de Kleer & Mariken A.C.G. van der Velden
 
 # Scripts
 
+  - [Required Packages &
+    Reproducibility](#required-packages-&-reproducibility)
+  - [Analyses](#analyses)
+      - [H1 Direct Effect of Journalistic Control on Negative
+        Appeals](##H1-Direct-Effect-of-Journalistic-Control-on-Negative-Appeals)
+      - [H2 Interaction Effect of Polls with Journalistic Control on
+        Negative
+        Appeals](##H2-Interaction-Effect-of-Polls-with-Journalistic-Control-on-Negative-Appeals)
+      - [H3 Interaction Effect of Ideological Extremity with
+        Journalistic Control on Negative
+        Appeals](##H4-Interaction-Effect-of-Ideological-Extremity-with-Journalistic-Control-on-Negative-Appeals)
+      - [H4 Interaction Effect of Issue Ownership with Journalistic
+        Control on Negative
+        Appeals](##H4-Interaction-Effect-of-Issue-Ownership-with-Journalistic-Control-on-Negative-Appeals)
+
 # Required Packages & Reproducibility
 
 ``` r
@@ -11,7 +26,7 @@ rm(list=ls())
 source(here("src/lib/functions.R"))
 ```
 
-# Analysis
+# Analyses
 
 ``` r
 load(here("data/intermediate/cleaned_data.RData"))

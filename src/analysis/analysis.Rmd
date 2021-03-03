@@ -21,10 +21,10 @@ library(here)
 # Scripts
 - [Required Packages &amp; Reproducibility](#required-packages-&amp;-reproducibility)
 - [Analyses](#analyses)
-  - [H1 Direct Effect of Journalistic Control on Negative Appeals](##H1-Direct-Effect-of-Journalistic-Control-on-Negative-Appeals)
-  - [H2 Interaction Effect of Polls with Journalistic Control on Negative Appeals](##H2-Interaction-Effect-of-Polls-with-Journalistic-Control-on-Negative-Appeals)
-  - [H3 Interaction Effect of Ideological Extremity with Journalistic Control on Negative Appeals](##H4-Interaction-Effect-of-Ideological-Extremity-with-Journalistic-Control-on-Negative-Appeals)
-  - [H4 Interaction Effect of Issue Ownership with Journalistic Control on Negative Appeals](##H4-Interaction-Effect-of-Issue-Ownership-with-Journalistic-Control-on-Negative-Appeals)
+  - [H1 Direct Effect of Journalistic Control on Negative Appeals](#H1-Direct-Effect-of-Journalistic-Control-on-Negative-Appeals)
+  - [H2 Interaction Effect of Polls with Journalistic Control on Negative Appeals](#H2-Interaction-Effect-of-Polls-with-Journalistic-Control-on-Negative-Appeals)
+  - [H3 Interaction Effect of Ideological Extremity with Journalistic Control on Negative Appeals](#H3-Interaction-Effect-of-Ideological-Extremity-with-Journalistic-Control-on-Negative-Appeals)
+  - [H4 Interaction Effect of Issue Ownership with Journalistic Control on Negative Appeals](#H4-Interaction-Effect-of-Issue-Ownership-with-Journalistic-Control-on-Negative-Appeals)
 
 # Required Packages &amp; Reproducibility
 ```{r "env", message=FALSE, warning=F}
