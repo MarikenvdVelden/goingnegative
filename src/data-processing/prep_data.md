@@ -18,14 +18,13 @@ Dirck de Kleer & Mariken A.C.G. van der Velden
 
 ``` r
 rm(list=ls())
-
 renv::snapshot()
 ```
 
     ## * The lockfile is already up to date.
 
 ``` r
-source("../lib/functions.R")
+source(here("src/lib/functions.R"))
 ```
 
 ## Tidy Data
@@ -36,7 +35,7 @@ Load manually annotated data - for a validation excercise see
 (`new_party`).
 
 ``` r
-d <- read_csv("../../data/raw/coded-data-NL-2017-campaign.csv") %>%
+d <- read_csv(here("data/raw/coded-data-NL-2017-campaign.csv")) %>%
   mutate(id = paste(date, party, sep = "."))
 
 table(d$date, d$party)
@@ -353,7 +352,7 @@ percentages how many of the respondents associate an issue with a
 party.
 
 ``` r
-aio <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
+aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
@@ -433,7 +432,7 @@ than people have agreed with the position of the
 party.
 
 ``` r
-data <- read_sav("../../data/raw/Netherlands+survey+October+2016.sav") %>%
+data <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   zap_labels()
 
 for(i in 1:19){
@@ -582,31 +581,27 @@ rm(cio)
 ## Save Data for Analysis
 
 ``` r
-save(d, file = "../../data/intermediate/cleaned_data.RData")
+save(d, file = here("data/intermediate/cleaned_data.RData"))
 ```
 
 ## Visualization of Data
 
-![](prep_data_files/figure-gfm/unnamed-chunk-10-1.png)<!-- -->
+![](report/figures/Overview%20of%20Appeals%20per%20Medium-1.png)<!-- -->
 
 ### Dependent Variable
 
-![](prep_data_files/figure-gfm/unnamed-chunk-11-1.png)<!-- -->
+![](report/figures/Dependent%20Variable-1.png)<!-- -->
 
 ### Independent Variable
 
-![](prep_data_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+![](report/figures/Independent%20Variables%20-%20JI-1.png)<!-- -->
 
-![](prep_data_files/figure-gfm/unnamed-chunk-13-1.png)<!-- -->
+![](report/figures/Independent%20Variables%20-%20Polls-1.png)<!-- -->
 
-![](prep_data_files/figure-gfm/unnamed-chunk-14-1.png)<!-- -->
+![](report/figures/Independent%20Variables%20-%20IO-1.png)<!-- -->
 
-![](prep_data_files/figure-gfm/unnamed-chunk-15-1.png)<!-- -->
-
-### Control Variables
-
-![](prep_data_files/figure-gfm/unnamed-chunk-16-1.png)<!-- -->
+![](report/figures/Independent%20Variables%20-%20IE-1.png)<!-- -->
 
 ### Correlations Matrix
 
-![](prep_data_files/figure-gfm/unnamed-chunk-17-1.png)<!-- -->
+![](report/figures/Correlations%20Matrix-1.png)<!-- -->

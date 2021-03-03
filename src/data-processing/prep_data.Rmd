@@ -8,9 +8,9 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r setup, include=FALSE}
+```{r "setup", include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
-                      fig.path='../report/figures/')
+                      fig.path='report/figures/')
 library(printr)
 options(digits = 2)
 library(rmarkdown)
@@ -28,15 +28,15 @@ library(here)
   - [Correlations Matrix](#correlations-matrix)
 
 ## Required Packages &amp; Reproducibility
-```{r, message=FALSE, warning=F}
+```{r "env", message=FALSE, warning=F}
 rm(list=ls())
 renv::snapshot()
-source(here("lib/functions.R"))
+source(here("src/lib/functions.R"))
 ```
 
 ## Tidy Data
 Load manually annotated data - for a validation excercise see [here](../../n) - and create variables for being in opposition (`in_opposition`) and whether the party is a newly founded party (`new_party`).
-```{r}
+```{r "get handcoded data"}
 d <- read_csv(here("data/raw/coded-data-NL-2017-campaign.csv")) %>%
   mutate(id = paste(date, party, sep = "."))
 
@@ -46,7 +46,7 @@ table(d$date, d$party)
 Not all parties are present at all days of the month, indicated by value `0` in the table.
 We ensure that all days in the 2017 campaign period are present in our data, for the purpose of times-series cross-sectional analyses. 
 
-```{r}
+```{r "mutate handcoded data"}
 df <- expand_grid(date = seq(as.Date("2017/02/15"), 
                              as.Date("2017/03/14"), by = "day"),
                   party = c("50PLUS", "CDA", "CU", "D66", "FvD", "GL",
@@ -91,7 +91,7 @@ We look at party's deviation from (a) the median party, and (b) the mean party, 
 We first add the [2017 Chapel Hill Expert Survey](https://www.chesdata.eu/s/CHES_means_2017.csv) to our manually annotated data `d` to calculate party's ideological extremity for the 2017 (`ie_mean_ches2017` and `ie_median_ches2017`), and 2012 election campaigns (`ie_mean_ches2014` and `ie_median_ches2014`).
 
 
-```{r}
+```{r "add chess data"}
 ches <- read_csv("https://www.chesdata.eu/s/CHES_means_2017.csv") %>%
   filter(country == "nl") %>%
   select(party = party, rile_ches = lrgen) %>%
@@ -115,7 +115,7 @@ rm(ches)
 
 Second, we added data from the [Manifesto Project](https://manifesto-project.wzb.eu) to our manually annotated data `d` to calculate party's ideological extremity based on the 2017 (`ie_mean_cmp2017` and `ie_median_cmp2017`), and 2012 election manifesto's (`ie_mean_cmp2012` and `ie_median_cmp2012`) as well as to add the seat share of the party in the national elections most prior to 2017 (`seats`).
 
-```{r}
+```{r "add mp data"}
 cmp <- read_csv("https://manifesto-project.wzb.eu/down/data/2020b/datasets/MPDataset_MPDS2020b.csv") %>%
   filter(countryname == "Netherlands", date == "201703") %>%
   mutate(ie_mean_cmp2017 = abs(rile - median(rile)),
@@ -141,7 +141,7 @@ rm(cmp)
 Subsequently, we add [polling data](https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen) to our manually annotated data.
 We calculate the relative gains (or losses) based on: a) polled seats vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing1`),  b) lagged polled seats by 1 day vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing2`), c) lagged polled seats by 1 week vis-a-vis parliamentary seats prior to the 2017 elections (`poll_standing3`), d) polled seats vis-a-vis lagged polled seats by 1 day (`poll_standing4`), e) polled seats vis-a-vis lagged polled seats by 1 week (`poll_standing5`), f) lagged polled seats by 1 day vis-a-vis lagged polled seats by 1 week (`poll_standing6`).
 
-```{r}
+```{r "add polls data"}
 polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#Peilingresultaten" %>%
   read_html() %>%
   html_nodes(xpath = '//*[@id="mw-content-text"]/div/table[3]') %>% 
@@ -289,8 +289,8 @@ We use the October 2016 panel wave of KiesKompas to measure associative and comp
 We measure associative issue ownership with the question _Which issue comes to your mind when you think about <party>?_.
 For each question, associative issue ownership variables will be measured by summation over the respondents and calculating in percentages how many of the respondents associate an issue with a party.
 
-```{r}
-aio <- read_sav(here("../data/raw/Netherlands+survey+October+2016.sav")) %>%
+```{r "add KK data-1"}
+aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
@@ -364,7 +364,7 @@ We measure competence issue ownership with the question _do you agree or disagre
 For each question, the compentence issue ownership variables will be measured by summation over the respondents.
 Negative figures imply that more people disagree with the position of the party than people have agreed with the position of the party.
 
-```{r}
+```{r "add KK data-2"}
 data <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
   zap_labels()
 
@@ -512,28 +512,27 @@ rm(cio)
 ```
 
 ## Save Data for Analysis
-```{r}
+```{r "save data"}
 save(d, file = here("data/intermediate/cleaned_data.RData"))
 ```
 
 ## Visualization of Data
 
-```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
-tmp <- d %>%  select(party) %>% group_by(party) %>% summarise(n=n())
-d <- left_join(d, tmp, by = "party")
-rm(tmp)
-
+```{r "Overview of Appeals per Medium", echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
 d %>%
-  select(party, source, medium,direction_appeal, n) %>%
+  select(party, source, medium,direction_appeal) %>%
+  group_by(party) %>% mutate(n = n()) %>%
+  ungroup() %>%
   filter(direction_appeal != "No Appeal") %>%
-  group_by(party, source, medium,direction_appeal) %>%
+  group_by(party, source, medium,direction_appeal, n) %>%
   summarise(tot = n(),
-            perc = tot/n) %>%
+            perc = round(tot/n,2)) %>%
   mutate(id = paste(party, source, direction_appeal, tot)) %>%
   distinct(id, .keep_all = T) %>%
   ggplot(mapping = aes(x = source, y = perc, fill = party)) +
   facet_grid(rows = vars(medium),
-             cols = vars(direction_appeal), scales = "free") +
+             cols = vars(direction_appeal), space = "free", 
+             scales = "free_y") +
   geom_col(alpha = .8, position = position_dodge()) +
   labs(x = "", y = "", title = "Appeals per Medium") +
   theme_minimal() +
@@ -548,19 +547,20 @@ d %>%
 
 ### Dependent Variable
 
-```{r, echo=F}
+```{r "Dependent Variable", echo=F}
 d %>%
   select(direction_appeal, party) %>%
   filter(direction_appeal != "No Appeal") %>%
   group_by(direction_appeal, party) %>%
-  summarise(n = n(),
-            perc = n/dim(d)[1]) %>%
+  summarise(n = n()) %>%
+  ungroup() %>% group_by(party) %>%
+  mutate(perc = round(n/sum(n),2)) %>%
   ggplot(mapping = aes(x = party, y = perc, fill = direction_appeal)) +
   geom_col(alpha = .8, position = position_dodge()) +
   labs(y = "", x = "", title = "Appeals made by Parties") +
   theme_minimal() +
   scale_y_continuous(labels=percent) +
-  scale_fill_viridis(option = "magma", discrete = T) +
+  scale_fill_viridis_d() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
         legend.position="bottom",
@@ -568,14 +568,15 @@ d %>%
 ```
 
 ### Independent Variable
-```{r, echo=F, message=FALSE, warning=FALSE}
+```{r "Independent Variables - JI", echo=F, message=FALSE, warning=FALSE}
 d %>%
   filter(direction_appeal != "No Appeal") %>%
   select(journalistic_intervenience,party) %>%
   group_by(journalistic_intervenience, party) %>%
-  summarise(n = n(),
-            perc = n/dim(d)[1]) %>%
-  mutate(journalistic_intervenience = recode(journalistic_intervenience,
+  summarise(n = n()) %>%
+  ungroup() %>% group_by(party) %>%
+  mutate(perc = round(n/sum(n),2),
+         journalistic_intervenience = recode(journalistic_intervenience,
          `0` = "No Journalistic Intervenience (Facebook)",
          `0.5` = "Medium Journalistic Intervenience (TV-shows)",
          `1` = "Strong Journalistic Intervenience (Newspapers)"),
@@ -584,9 +585,9 @@ d %>%
   ggplot(mapping = aes(y = perc, x = party, 
                        fill = journalistic_intervenience)) +
   geom_col(alpha = .8, position = position_dodge()) +
-  labs(y = "", x = "", title = "Journalistic Intervenience (H1a)") +
+  labs(y = "Appeals", x = "", title = "Journalistic Intervenience (H1a)") +
   theme_minimal() +
-  scale_fill_viridis(option = "magma", discrete = T) +
+  scale_fill_viridis_d() +
   scale_y_continuous(labels=percent) +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
@@ -596,7 +597,7 @@ d %>%
 ```
 
 
-```{r, echo=F, message=FALSE, warning=FALSE}
+```{r "Independent Variables - Polls", echo=F, message=FALSE, warning=FALSE}
 d %>%
   filter(direction_appeal != "No Appeal") %>%
   select(party, poll_standing1:poll_standing9) %>%
@@ -619,7 +620,7 @@ d %>%
   geom_point(position = position_dodge(width = 0.80), size = 2) +
   labs(y = "", x = "", title = "Standing in the Polls (H1b)") +
   theme_minimal() +
-  scale_color_viridis(option = "magma", discrete = T) +
+  scale_color_viridis_d() +
   scale_y_continuous(labels=percent) +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
@@ -628,7 +629,7 @@ d %>%
     guides(color=guide_legend(nrow=3,byrow=TRUE))
 ```
 
-```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
+```{r "Independent Variables - IO", echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
 d %>%
   filter(direction_appeal != "No Appeal") %>%
   select(party, issue, aio_percentage, cio_mean:cio_sd) %>%
@@ -647,7 +648,7 @@ d %>%
   geom_point(position = position_dodge(width = 0.80), size = 2) +
   labs(y = "", x = "", title = "Issue Ownership (H2a)") +
   theme_minimal() +
-  scale_color_viridis(option = "magma", discrete = T) +
+  scale_color_viridis_d() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
         legend.position="bottom",
@@ -656,7 +657,7 @@ d %>%
 ```
 
 
-```{r, echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=7}
+```{r "Independent Variables - IE", echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=7}
 d %>%
   filter(direction_appeal != "No Appeal") %>%
   select(party,ie_median_ches2017:ie_median_cmp2012) %>%
@@ -684,7 +685,7 @@ d %>%
   geom_point(position = position_dodge(width = 0.80), size = 2) +
   labs(y = "", x = "", title = "Ideological Extremity (H2b)") +
   theme_minimal() +
-  scale_color_viridis(option = "magma", discrete = T) +
+  scale_color_viridis_d() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
         legend.position="bottom",
@@ -692,33 +693,8 @@ d %>%
   guides(colour=guide_legend(nrow=4, byrow=T))
 ```
 
-### Control Variables
-
-```{r, echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=7}
-d %>%
-  filter(direction_appeal != "No Appeal") %>%
-  select(`Being in Opposition` = in_opposition, 
-         `New Party` = new_party,
-         party) %>%
-  pivot_longer(cols = 1:2,
-               names_to = "variable") %>%
-  group_by(party, variable, value) %>%
-  summarise(n = n()) %>%
-  ggplot(mapping = aes(x = party, y = n,fill = value)) +
-  geom_col(alpha = .8, position = position_dodge()) +
-  facet_grid(rows = vars(variable), scales = "free") +
-  labs(x = "", y = "Count", title = "Control Variables") +
-  theme_minimal() +
-  scale_fill_viridis(option = "magma", discrete = F) +
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle=45),
-        legend.position="none",
-        legend.title = element_blank()) +
-  guides(fill=guide_legend(nrow=6, byrow=T))
-```
-
 ### Correlations Matrix
-```{r, echo=F, message=T, warning=T, fig.width=15, fig.height=15}
+```{r "Correlations Matrix", echo=F, message=T, warning=T, fig.width=15, fig.height=15}
 d %>%
   filter(direction_appeal != "No Appeal") %>%
   select(`Appeals made by Parties` = direction_appeal,
@@ -744,13 +720,11 @@ d %>%
          `Ideological Extremity: Median (MP 2017)` = ie_median_cmp2017,
          `Ideological Extremity: Mean (MP 2012)` = ie_mean_cmp2012,
          `Ideological Extremity: Median (MP 2012)` = ie_median_cmp2012,
-         `Being in Opposition` = in_opposition,
-         `New Party` = new_party, 
          Source = source) %>%
   ggcorrmat(
   type = "robust", # correlation method
   cor.vars = c(everything()), # a range of variables can be selected
-  colors = c("#000004FF", "#B63679FF", "#FCFDBFFF"),
+  colors = c("#440154FF", "#21908CFF", "#FDE725FF"),
   title = "Correlalogram for Variables under Study"
 )
 ```
