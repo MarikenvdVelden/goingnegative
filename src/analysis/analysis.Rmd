@@ -1,6 +1,6 @@
 ---
-title: 'Analysis'
-author: "Dirck de Kleer & Mariken A.C.G. van der Velden"
+title: 'Analyses'
+author: 
 output: 
   github_document:
     toc: yes

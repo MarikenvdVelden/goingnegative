@@ -1,6 +1,5 @@
-Analysis
+Analyses
 ================
-Dirck de Kleer & Mariken A.C.G. van der Velden
 
 # Scripts
 

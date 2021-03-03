@@ -1,6 +1,5 @@
 Prepare Data
 ================
-Dirck de Kleer & Mariken A.C.G. van der Velden
 
 # Scripts
 
