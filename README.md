@@ -21,7 +21,7 @@ The following data files might be of interest:
 * [cleaned_data.RData](data/intermediate/cleaned_data.RData) Data cleaned for the analyses
 
 
-## Results as presented in the paper
+## Results
 
 * [Code](src/analysis/analysis.md) to conduct the multiverse analyses
 * [Figures](report/figures) visualizing the descriptives and the results of the analyses 
