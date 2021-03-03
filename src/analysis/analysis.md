@@ -4,27 +4,18 @@ Dirck de Kleer & Mariken A.C.G. van der Velden
 
 # Scripts
 
-  - [Required Packages &
-    Reproducibility](#required-packages-&-reproducibility)
-  - [Analysis](#analysis)
-      - [Specifying the Multiverse](#specifiying-the-multiverse)
-      - [H1a](#H1a)
-      - [H1b](#H1b)
-      - [H2a](#H2a)
-      - [H2b](#H2b)
-
-## Required Packages & Reproducibility
+# Required Packages & Reproducibility
 
 ``` r
 rm(list=ls())
-
-source("../lib/functions.R")
+source(here("src/lib/functions.R"))
 ```
 
-## Analysis
+# Analysis
 
 ``` r
-load("../../data/intermediate/cleaned_data.RData")
+load(here("data/intermediate/cleaned_data.RData"))
+
 df <- d %>%
   mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
                                   1,0)) %>%
@@ -75,6 +66,8 @@ df <- slide(data = df, Var = "negative_appeals", TimeVar = "date",
             slideBy = -1)
 ```
 
+## H1 Direct Effect of Journalistic Control on Negative Appeals
+
 ``` r
 h1 <- run_specs(df = df,
                       y = c("negative_appeals"),
@@ -117,7 +110,9 @@ h1 %>%
   coord_flip()
 ```
 
-<img src="analysis_files/figure-gfm/h1-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/h1-1.png" style="display: block; margin: auto;" />
+
+## H2 Interaction Effect of Polls with Journalistic Control on Negative Appeals
 
 ``` r
 h2_1 <- run_specs(df = df,
@@ -200,7 +195,9 @@ h2 %>%
   guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-<img src="analysis_files/figure-gfm/h2-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/h2-1.png" style="display: block; margin: auto;" />
+
+## H3 Interaction Effect of Ideological Extremity with Journalistic Control on Negative Appeals
 
 ``` r
 h3_1 <- run_specs(df = df,
@@ -284,7 +281,9 @@ h3 %>%
   guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-<img src="analysis_files/figure-gfm/h3-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/h3-1.png" style="display: block; margin: auto;" />
+
+## H4 Interaction Effect of Issue Ownership with Journalistic Control on Negative Appeals
 
 ``` r
 h4_1 <- run_specs(df = df,
@@ -361,4 +360,4 @@ h4 %>%
   guides(color=guide_legend(nrow=1,byrow=TRUE))
 ```
 
-<img src="analysis_files/figure-gfm/h4-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/h4-1.png" style="display: block; margin: auto;" />
