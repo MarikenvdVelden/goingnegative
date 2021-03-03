@@ -11,7 +11,7 @@ editor_options:
 ```{r "setup", include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
                       fig.align = "center",
-                      fig.path=here::here('report/figures/'))
+                      fig.path=('../../report/figures/'))
 library(printr)
 options(digits = 2)
 library(rmarkdown)

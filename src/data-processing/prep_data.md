@@ -586,22 +586,22 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 ## Visualization of Data
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Overview of Appeals per Medium-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Overview of Appeals per Medium-1.png" style="display: block; margin: auto;" />
 
 ### Dependent Variable
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Dependent Variable-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Dependent Variable-1.png" style="display: block; margin: auto;" />
 
 ### Independent Variable
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - JI-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Independent Variables - JI-1.png" style="display: block; margin: auto;" />
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - Polls-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Independent Variables - Polls-1.png" style="display: block; margin: auto;" />
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - IO-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Independent Variables - IO-1.png" style="display: block; margin: auto;" />
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Independent Variables - IE-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Independent Variables - IE-1.png" style="display: block; margin: auto;" />
 
 ### Correlations Matrix
 
-<img src="/Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/Correlations Matrix-1.png" style="display: block; margin: auto;" />
+<img src="../../report/figures/Correlations Matrix-1.png" style="display: block; margin: auto;" />
