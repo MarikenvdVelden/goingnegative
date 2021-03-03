@@ -12,6 +12,7 @@ editor_options:
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 library(printr)
 library(rmarkdown)
+library(here)
 ```
 
 # Scripts
@@ -27,12 +28,13 @@ library(rmarkdown)
 ```{r, message=FALSE, warning=F}
 rm(list=ls())
 
-source("../lib/functions.R")
+source(here("lib/functions.R"))
 ```
 
 ## Analysis
 ```{r "data for analyses"}
-load("../../data/intermediate/cleaned_data.RData")
+load(here("../../data/intermediate/cleaned_data.RData"))
+
 df <- d %>%
   mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
                                   1,0)) %>%

@@ -9,8 +9,10 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
+                      fig.path='../report/figures/')
 library(printr)
+options(digits = 2)
 library(rmarkdown)
 library(here)
 ```
@@ -28,9 +30,7 @@ library(here)
 ## Required Packages &amp; Reproducibility
 ```{r, message=FALSE, warning=F}
 rm(list=ls())
-
 renv::snapshot()
-
 source(here("lib/functions.R"))
 ```
 
@@ -290,7 +290,7 @@ We measure associative issue ownership with the question _Which issue comes to y
 For each question, associative issue ownership variables will be measured by summation over the respondents and calculating in percentages how many of the respondents associate an issue with a party.
 
 ```{r}
-aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
+aio <- read_sav(here("../data/raw/Netherlands+survey+October+2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
