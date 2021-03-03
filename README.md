@@ -20,8 +20,15 @@ The following data files might be of interest:
 * [cleaned_data.RData](data/intermediate/cleaned_data.RData) 
 * [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx)
 
-See the files in [src/data-processing](src/data-processing/README.md) for details on how these files were constructed.
+See the files in [src/data-processing](src/data-processing/prep_data.md) for details on how these files were constructed.
 
 ## Results as presented in the paper
 
 * [Multiverse Analyses](src/analysis/analysis.md)
+* [Figures](report/figures)
+
+## Code of Conduct
+
+Please note that this project is released with a [Contributor Code of
+Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to
+abide by its terms.
