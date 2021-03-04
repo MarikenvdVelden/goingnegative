@@ -4,6 +4,7 @@ library(rvest)
 library(ggstatsplot)
 library(haven)
 library(here)
+library(xtable)
 library(broom)
 library(scales)
 library(viridis)
@@ -49,3 +50,8 @@ glmer_mv <- function(formula, data,...) {
   glmer(formula, data, family = poisson(link = "log"))
 }
 
+#' Render a template using jinja2 command line tool
+render_j2 = function(template, output, data, auto_unbox=TRUE, na="string") {
+  data = jsonlite::toJSON(data, pretty=TRUE, auto_unbox=auto_unbox, na=na)
+  system(glue::glue("env/bin/j2 --format json {template} -o {output}"), input=data)
+}

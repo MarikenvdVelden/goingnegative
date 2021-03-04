@@ -15,7 +15,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE,
 library(printr)
 options(digits = 2)
 library(rmarkdown)
-library(here)
 ```
 
 # Scripts
@@ -32,7 +31,7 @@ library(here)
 ```{r "env", message=FALSE, warning=F}
 rm(list=ls())
 renv::snapshot()
-source(here("src/lib/functions.R"))
+source(here::here("src/lib/functions.R"))
 ```
 
 ## Tidy Data
@@ -292,7 +291,7 @@ We measure associative issue ownership with the question _Which issue comes to y
 For each question, associative issue ownership variables will be measured by summation over the respondents and calculating in percentages how many of the respondents associate an issue with a party.
 
 ```{r "add KK data-1"}
-aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
+aio <- read_sav(here("data/raw-private/KiesKompas-data-Oct-2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
@@ -367,7 +366,7 @@ For each question, the compentence issue ownership variables will be measured by
 Negative figures imply that more people disagree with the position of the party than people have agreed with the position of the party.
 
 ```{r "add KK data-2"}
-data <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
+data <- read_sav(here("data/raw-private/KiesKompas-data-Oct-2016.sav")) %>%
   zap_labels()
 
 for(i in 1:19){
@@ -520,7 +519,7 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 ## Visualization of Data
 
-```{r "Overview of Appeals per Medium", echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+```{r "Overview of Appeals per Medium", echo=F, message=FALSE, warning=FALSE, fig.width=6, fig.height=8}
 d %>%
   select(party, source, medium,direction_appeal) %>%
   group_by(party) %>% mutate(n = n()) %>%
@@ -529,7 +528,11 @@ d %>%
   group_by(party, source, medium,direction_appeal, n) %>%
   summarise(tot = n(),
             perc = round(tot/n,2)) %>%
-  mutate(id = paste(party, source, direction_appeal, tot)) %>%
+  mutate(id = paste(party, source, direction_appeal, tot),
+         source = ifelse(medium=="Facebook", "Facebook", source),
+         medium = ifelse(medium=="Facebook", "Social Media", medium),
+         medium = factor(medium, 
+                         levels = c("Newspapers", "TV-shows", "Social Media"))) %>%
   distinct(id, .keep_all = T) %>%
   ggplot(mapping = aes(x = source, y = perc, fill = party)) +
   facet_grid(rows = vars(medium),
@@ -545,6 +548,94 @@ d %>%
         legend.title = element_blank()) +
   guides(fill=guide_legend(nrow=2, byrow=T)) +
   coord_flip()
+```
+
+```{r "Table with Descriptives", echo=F, message=FALSE, warning=FALSE, fig.width=10, fig.height=10}
+df <- d %>%
+  mutate(negative_appeal = ifelse(direction_appeal=="Negative Appeal",
+                                  1,0)) %>%
+  group_by(party, date) %>%
+  summarise(negative_appeals = n(),
+            polls1 = mean(poll_standing1, na.rm = T),
+            polls2 = mean(poll_standing2, na.rm = T),
+            polls3 = mean(poll_standing3, na.rm = T),
+            polls4 = mean(poll_standing4, na.rm = T),
+            polls5 = mean(poll_standing5, na.rm = T),
+            polls6 = mean(poll_standing6, na.rm = T),
+            polls7 = mean(poll_standing7, na.rm = T),
+            polls8 = mean(poll_standing8, na.rm = T),
+            polls9 = mean(poll_standing9, na.rm = T),
+            io1 = mean(aio_percentage, na.rm = T),
+            io2 = mean(cio_mean, na.rm = T),
+            io3 = mean(cio_median, na.rm = T),
+            io4 = mean(cio_sd, na.rm = T),
+            ie1 = mean(ie_median_ches2017, na.rm = T),
+            ie2 = mean(ie_mean_ches2017, na.rm = T),
+            ie3 = mean(ie_median_ches2014, na.rm = T),
+            ie4 = mean(ie_mean_ches2014, na.rm = T),
+            ie5 = mean(ie_median_cmp2017, na.rm = T),
+            ie6 = mean(ie_mean_cmp2017, na.rm = T),
+            ie7 = mean(ie_median_cmp2012, na.rm = T),
+            ie8 = mean(ie_mean_cmp2012, na.rm = T),
+            ji1  = mean(journalistic_intervenience, na.rm = T),
+            ji2 = sum(journalistic_intervenience),
+            ji3 = ji2-ji1
+            ) %>%
+  mutate(ie3 = ifelse(party == "FvD", 0, ie3),
+         ie4 = ifelse(party == "FvD", 0, ie4),
+         ie7 = ifelse(party == "FvD", 0, ie7),
+         ie8 = ifelse(party == "FvD", 0, ie8)) %>%
+  ungroup()
+
+df <- slide(data = df, Var = "negative_appeals", TimeVar = "date",
+               GroupVar = "party", NewVar = "l_negative_appeal", 
+            slideBy = -1)
+
+descr <- df %>%
+  select(negative_appeals:l_negative_appeal) %>%
+  pivot_longer(cols = everything()) %>%
+  group_by(name) %>%
+  summarise(means = mean(value, na.rm = T),
+            stdev = sd(value, na.rm = T),
+            minvalue = min(value, na.rm = T),
+            maxvalue = max(value, na.rm = T)) %>%
+  ungroup() %>%
+  mutate(name = recode(name,
+         `negative_appeals` = "Negative Appeals",
+         `l_negative_appeal` = "Negative Appeals (First lag)",
+         `ji1` = "Journalistic Intervenience (Daily Average)",
+         `ji2` = "Journalistic Intervenience (Daily Sum)",
+         `ji3` = "Journalistic Intervenience (Deviation from Daily Average)",
+         `polls1`  = "Polls/Seats",
+         `polls2`  = "Polls (First Lag)/Seats",
+         `polls3`  = "Polls (Weekly Average)/Seats",
+         `polls4`  = "Polls (Rolling Mean)/Seats",
+         `polls5`  = "Polls/ Polls (First Lag)",
+         `polls6`  = "Polls/ Polls (Weekly Average)",
+         `polls7`  = "Polls/ Polls (Rolling Mean)",
+         `polls8`  = "Polls (First Lag)/(Weekly Average)",
+         `polls9`  = "Polls (First Lag)/(Rolling Mean)",
+         `io1` = "Associative Issue Ownership",
+         `io2` = "Competence Issue Ownership (Mean)",
+         `io3` = "Competence Issue Ownership (Median)",
+         `io4` = "Competence Issue Ownership (Standard Deviation)",
+         `ie1` = "Ideological Extremity: Mean (CHES 2017)",
+         `ie2` = "Ideological Extremity: Median (CHES 2017)",
+         `ie3` = "Ideological Extremity: Mean (CHES 2014)",
+         `ie4` = "Ideological Extremity: Median (CHES 2014)",
+         `ie5` = "Ideological Extremity: Mean (MP 2017)",
+         `ie6` = "Ideological Extremity: Median (MP 2017)",
+         `ie7` = "Ideological Extremity: Mean (MP 2012)",
+         `ie8` = "Ideological Extremity: Median (MP 2012)"))
+
+table2 <- knitr::kable(descr, digits=2)
+fn <- here("report/figures/table_descriptives.md")
+cat("# Table: Descriptive Information of Variables under Study \n\n", file=fn)
+cat(table2, file=fn, sep="\n", append=T)
+
+methodnames = setNames(as.list(descr$name), descr$name)
+table <- purrr::map(descr, .f= ".") 
+render_j2("src/data-processing/table_descriptives.tex.j2", "report/figures/table_descriptives.tex", data=list(data=table, methods=methodnames))
 ```
 
 ### Dependent Variable

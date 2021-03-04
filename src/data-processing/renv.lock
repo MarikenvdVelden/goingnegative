@@ -100,6 +100,13 @@
       "Repository": "CRAN",
       "Hash": "a4b103a5f81c11851258533104f3f08a"
     },
+    "purrr": {
+      "Package": "purrr",
+      "Version": "0.3.4",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "97def703420c8ab10d8f0e6c72101e02"
+    },
     "renv": {
       "Package": "renv",
       "Version": "0.12.2",

@@ -23,7 +23,7 @@ renv::snapshot()
     ## * The lockfile is already up to date.
 
 ``` r
-source(here("src/lib/functions.R"))
+source(here::here("src/lib/functions.R"))
 ```
 
 ## Tidy Data
@@ -351,7 +351,7 @@ percentages how many of the respondents associate an issue with a
 party.
 
 ``` r
-aio <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
+aio <- read_sav(here("data/raw-private/KiesKompas-data-Oct-2016.sav")) %>%
   select(`1_CDA` = Q13_1_1, `2_CDA` = Q13_2_1, 
          `1_PvdA` = Q13_1_2, `2_PvdA` = Q13_2_2,
          `1_SP` = Q13_1_3, `2_SP` = Q13_2_3,
@@ -431,7 +431,7 @@ than people have agreed with the position of the
 party.
 
 ``` r
-data <- read_sav(here("data/raw/Netherlands+survey+October+2016.sav")) %>%
+data <- read_sav(here("data/raw-private/KiesKompas-data-Oct-2016.sav")) %>%
   zap_labels()
 
 for(i in 1:19){

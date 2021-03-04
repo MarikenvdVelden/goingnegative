@@ -19,6 +19,7 @@ The following data files might be of interest:
 * [coded-data-NL-2017-campaign.csv](data/raw/coded-data-NL-2017-campaign.csv) Manually coded data by first author
 * [data/intermediate/Subset_data_intercoder_reliability.xlsx](data/intermediate/data/intermediate/Subset_data_intercoder_reliability.xlsx) Gold standard expert coding 
 * [cleaned_data.RData](data/intermediate/cleaned_data.RData) Data cleaned for the analyses
+* [table_descriptives.md](report/figures/table_descriptives.md) Descriptive information of the variables under study
 
 
 ## Results
