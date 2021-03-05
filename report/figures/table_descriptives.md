@@ -2,6 +2,9 @@
 
 |name                                                      | means| stdev| minvalue| maxvalue|
 |:---------------------------------------------------------|-----:|-----:|--------:|--------:|
+|group1                                                    |  0.35|  0.68|     0.00|     2.00|
+|group2                                                    |  0.38|  0.69|     0.00|     2.00|
+|group3                                                    |  0.32|  0.66|     0.00|     2.00|
 |Ideological Extremity: Mean (CHES 2017)                   |  2.19|  1.45|     0.00|     4.30|
 |Ideological Extremity: Median (CHES 2017)                 |  2.20|  1.38|     0.04|     4.24|
 |Ideological Extremity: Mean (CHES 2014)                   |  1.87|  1.49|     0.00|     4.44|
@@ -19,6 +22,8 @@
 |Journalistic Intervenience (Deviation from Daily Average) |  1.10|  2.91|     0.00|    19.20|
 |Negative Appeals (First lag)                              |  4.58|  5.44|     1.00|    30.00|
 |Negative Appeals                                          |  4.77|  5.55|     1.00|    30.00|
+|new_party                                                 |  0.08|  0.28|     0.00|     1.00|
+|opposition                                                |  0.83|  0.37|     0.00|     1.00|
 |Polls/Seats                                               |  1.59|  1.27|     0.00|     8.50|
 |Polls (First Lag)/Seats                                   |  1.58|  1.28|     0.00|     8.50|
 |Polls (Weekly Average)/Seats                              |  1.57|  1.31|     0.00|     8.50|
