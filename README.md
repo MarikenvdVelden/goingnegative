@@ -10,7 +10,7 @@ View the [draft of the paper here](report/draft.pdf).
 The main analysis code is located in the [src/data-processing](src/data-processing/). 
 Of interest might be:
 
-* [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with CHES, Manifesto Project, Polling Data, and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the [analysis](src/analysis/analysis.md).
+* [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with [CHES](https://www.chesdata.eu/), [Manifesto Project](https://manifesto-project.wzb.eu/), [polling data](https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen), and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the [analysis](src/analysis/analysis.md).
 
 ## Data
 
