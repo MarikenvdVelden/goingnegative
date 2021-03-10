@@ -7,7 +7,7 @@ No ethical approval was required for this study.
 View the [draft of the paper here](report/draft.pdf).
 
 ## Code
-The main analysis code is located in the [src/data-processing](src/data-processing/). 
+The main code to prepare the data is located in the [src/data-processing](src/data-processing/). 
 Of interest might be:
 
 * [Prepare Data](src/data-processing/prep_data.md) This file combines manually annotated data with [CHES](https://www.chesdata.eu/), [Manifesto Project](https://manifesto-project.wzb.eu/), [polling data](https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen), and data from [KiesKompas](https://www.kieskompas.nl/en/) and creates the variables for the [analysis](src/analysis/analysis.md).
@@ -23,7 +23,9 @@ The following data files might be of interest:
 
 ## Results
 
-* [Code](src/analysis/analysis.md) to conduct the multiverse analyses
+The main code to conduct the multiverse analyses is combined in the [src/analysis/analysis.md](src/analysis/analysis.md). 
+Of interest might be:
+* [Code](src/analysis/) to conduct the seperate multiverse analyses
 * [Figures](report/figures) visualizing the descriptives and the results of the analyses 
 
 ## Replication 
