@@ -21,11 +21,19 @@ The following data files might be of interest:
 * [cleaned_data.RData](data/intermediate/cleaned_data.RData) Data cleaned for the analyses
 * [table_descriptives.md](report/figures/table_descriptives.md) Descriptive information of the variables under study
 
-
 ## Results
 
 * [Code](src/analysis/analysis.md) to conduct the multiverse analyses
 * [Figures](report/figures) visualizing the descriptives and the results of the analyses 
+
+## Replication 
+
+To run all scripts, call [`doit`](https://github.com/ccs-amsterdam/ccs-compendium) in your command line:
+
+```
+sudo pip3 install doit
+doit
+```
 
 ## Code of Conduct
 
