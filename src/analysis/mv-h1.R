@@ -1,0 +1,10 @@
+h1 <- run_specs(df = df,
+                y = c("negative_appeals"),
+                x = c("ji1", "ji2", "ji3"),
+                controls = c("polls1","polls2","polls3","polls4",
+                             "polls5","polls6","polls7","polls8",
+                             "polls9",
+                             "ie1","ie2","ie3","ie4","ie5","ie6",
+                             "ie7","ie8",
+                             "io1","io2","io3","io4"),
+                model = "glmer_mv")
