@@ -1,6 +1,6 @@
 # When the Cat’s Away, the Mice will Play? How Journalistic Intervention Influences Political Parties' Decision to Go Negative
 
-Data &amp; Analysis Compendium for the _When the Cat’s Away, the Mice will Play? How Journalistic Intervention Influences Political Parties' Decision to Go Negative_ paper. 
+Data &amp; Analysis Compendium for the paper, entitled _When the Cat’s Away, the Mice will Play? How Journalistic Intervention Influences Political Parties' Decision to Go Negative_. 
 No ethical approval was required for this study.
 
 ## Draft
