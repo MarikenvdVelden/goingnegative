@@ -179,9 +179,9 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 <img src="../../report/figures/Independent Variables - Polls-1.png" style="display: block; margin: auto;" />
 
-<img src="../../report/figures/Independent Variables - IO-1.png" style="display: block; margin: auto;" />
-
 <img src="../../report/figures/Independent Variables - IE-1.png" style="display: block; margin: auto;" />
+
+<img src="../../report/figures/Independent Variables - IO-1.png" style="display: block; margin: auto;" />
 
 ### Correlations Matrix
 

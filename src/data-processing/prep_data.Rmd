@@ -143,15 +143,16 @@ d %>%
   summarise(n = n()) %>%
   ungroup() %>% group_by(party) %>%
   mutate(perc = round(n/sum(n),2)) %>%
-  ggplot(mapping = aes(x = party, y = perc, fill = direction_appeal)) +
-  geom_col(alpha = .8, position = position_dodge()) +
-  labs(y = "", x = "", title = "Appeals made by Parties") +
+  filter(direction_appeal == "Negative Appeal")  %>%
+  ggplot(mapping = aes(x = party, y = perc)) +
+  geom_col(alpha = .8, position = position_dodge(), fill = "#440154FF") +
+  labs(y = "", x = "", title = "Negative Appeals") +
   theme_minimal() +
   scale_y_continuous(labels=percent) +
   scale_fill_viridis_d() +
   theme(plot.title = element_text(hjust = 0.5),
         axis.text.x = element_text(angle=45),
-        legend.position="bottom",
+        legend.position="none",
         legend.title = element_blank()) 
 ```
 
@@ -173,7 +174,7 @@ d %>%
   ggplot(mapping = aes(y = perc, x = party, 
                        fill = journalistic_intervenience)) +
   geom_col(alpha = .8, position = position_dodge()) +
-  labs(y = "Appeals", x = "", title = "Journalistic Intervenience (H1a)") +
+  labs(y = "Appeals", x = "", title = "Journalistic Intervenience (H1)") +
   theme_minimal() +
   scale_fill_viridis_d() +
   scale_y_continuous(labels=percent) +
@@ -206,7 +207,7 @@ d %>%
                      `poll_standing9` = "Polls (Measure 9)")) %>%
   ggplot(mapping = aes(y = polls, x = party, colour = id)) +
   geom_point(position = position_dodge(width = 0.80), size = 2) +
-  labs(y = "", x = "", title = "Standing in the Polls (H1b)") +
+  labs(y = "", x = "", title = "Standing in the Polls (H2)") +
   theme_minimal() +
   scale_color_viridis_d() +
   scale_y_continuous(labels=percent) +
@@ -215,33 +216,6 @@ d %>%
         legend.position="bottom",
         legend.title = element_blank()) +
     guides(color=guide_legend(nrow=3,byrow=TRUE))
-```
-
-```{r "Independent Variables - IO", echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
-d %>%
-  filter(direction_appeal != "No Appeal") %>%
-  select(party, issue, aio_percentage, cio_mean:cio_sd) %>%
-  drop_na() %>%
-  pivot_longer(cols = aio_percentage:cio_sd,
-               names_to = "id",
-               values_to = "io") %>%
-  mutate(id = recode(id,
-                     `aio_percentage` = "Associative Issue Ownership: Percentage",
-                     `cio_mean` = "Competence Issue Ownership: Mean Value",
-                     `cio_median` = "Competence Issue Ownership: Median Value",
-                     `cio_sd` = "Competence Issue Ownership: Standard Deviation")) %>%
-  ggplot(mapping = aes(y = io, x = party, 
-                       color = id)) +
-  facet_wrap(.~issue, ncol = 4) +
-  geom_point(position = position_dodge(width = 0.80), size = 2) +
-  labs(y = "", x = "", title = "Issue Ownership (H2a)") +
-  theme_minimal() +
-  scale_color_viridis_d() +
-  theme(plot.title = element_text(hjust = 0.5),
-        axis.text.x = element_text(angle=45),
-        legend.position="bottom",
-        legend.title = element_blank())  +
-  guides(color=guide_legend(nrow=2,byrow=TRUE))
 ```
 
 
@@ -271,7 +245,7 @@ d %>%
   ggplot(mapping = aes(y = extremity, x = party, 
                        colour = id, group = id)) +
   geom_point(position = position_dodge(width = 0.80), size = 2) +
-  labs(y = "", x = "", title = "Ideological Extremity (H2b)") +
+  labs(y = "", x = "", title = "Ideological Extremity (H3)") +
   theme_minimal() +
   scale_color_viridis_d() +
   theme(plot.title = element_text(hjust = 0.5),
@@ -280,6 +254,34 @@ d %>%
         legend.title = element_blank())  +
   guides(colour=guide_legend(nrow=4, byrow=T))
 ```
+
+```{r "Independent Variables - IO", echo=F, message=FALSE, warning=FALSE,fig.width=10, fig.height=10}
+d %>%
+  filter(direction_appeal != "No Appeal") %>%
+  select(party, issue, aio_percentage, cio_mean:cio_sd) %>%
+  drop_na() %>%
+  pivot_longer(cols = aio_percentage:cio_sd,
+               names_to = "id",
+               values_to = "io") %>%
+  mutate(id = recode(id,
+                     `aio_percentage` = "Associative Issue Ownership: Percentage",
+                     `cio_mean` = "Competence Issue Ownership: Mean Value",
+                     `cio_median` = "Competence Issue Ownership: Median Value",
+                     `cio_sd` = "Competence Issue Ownership: Standard Deviation")) %>%
+  ggplot(mapping = aes(y = io, x = party, 
+                       color = id)) +
+  facet_wrap(.~issue, ncol = 4) +
+  geom_point(position = position_dodge(width = 0.80), size = 2) +
+  labs(y = "", x = "", title = "Issue Ownership (H4)") +
+  theme_minimal() +
+  scale_color_viridis_d() +
+  theme(plot.title = element_text(hjust = 0.5),
+        axis.text.x = element_text(angle=45),
+        legend.position="bottom",
+        legend.title = element_blank())  +
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
+```
+
 
 ### Correlations Matrix
 ```{r "Correlations Matrix", echo=F, message=T, warning=T, fig.width=15, fig.height=15}
