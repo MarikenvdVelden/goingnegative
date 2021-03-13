@@ -30,8 +30,8 @@ source(here::here("src/lib/functions.R"))
 
 Load manually annotated data - for a validation excercise see
 [here](Calculate_ICR.R) for the code and
-[here](../data/intermediate/Subset_data_intercode_reliability.csv) for
-the data - and create variables for being in opposition
+[here](../../data/intermediate/Subset_data_intercode_reliability.csv)
+for the data - and create variables for being in opposition
 (`in_opposition`) and whether the party is a newly founded party
 (`new_party`).
 
