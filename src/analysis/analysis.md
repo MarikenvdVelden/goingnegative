@@ -106,11 +106,13 @@ h2 %>%
   labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
 #       title = "Effect of Standing in the Polls on # Negative Appeals",
 #      subtitle = "Controlled for Ideological Extremity and Issue Ownership" ) +
+  theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
         legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
@@ -134,13 +136,15 @@ h3 %>%
   geom_point() + geom_errorbar() +
   facet_grid(id~subsets, scales = "free") +
   labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model" ) + 
-  #       title = "Effect of Ideologically Extremity on # Negative Appeals",
+    #       title = "Effect of Ideologically Extremity on # Negative Appeals",
   #       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
+  theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
         legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
@@ -164,13 +168,15 @@ h4 %>%
   geom_point() + geom_errorbar() +
   facet_grid(id~subsets, scales = "free") +
   labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
+  theme_minimal() +
   #       title = "Effect of Issue Ownership  on # Negative Appeals",
   #       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
-        axis.ticks.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
         legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
