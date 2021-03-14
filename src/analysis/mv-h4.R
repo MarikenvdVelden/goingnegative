@@ -46,4 +46,9 @@ h4 <- h4_1 %>%
                           `group1 = 1` = "Journalistic Intervention: Medium",
                           `group1 = 2` = "Journalistic Intervention: High"),
          subsets = factor(subsets,
-                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
+                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")),
+         x = recode(x,
+                    `io1` = "Associative Issue Ownership",
+                    `io2` = "Competence Issue Ownership (Mean)",
+                    `io3` = "Competence Issue Ownership (Median)",
+                    `io4` = "Competence Issue Ownership (St.Dev.)"))

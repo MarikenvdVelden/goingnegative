@@ -51,6 +51,16 @@ h2 <- h2_1 %>%
                           `group1 = 0` = "Journalistic Intervention: Low",
                           `group1 = 1` = "Journalistic Intervention: Medium",
                           `group1 = 2` = "Journalistic Intervention: High"),
+         x = recode(x,
+                    `polls1` = "Polls/Seats",
+                    `polls2` = "Polls (First Lag)/Seats", 
+                    `polls3` = "Polls (Weekly Average)/Seats",
+                    `polls4` = "Polls (Rolling Mean)/Seats",
+                    `polls5` = "Polls/Polls (First Lag)",
+                    `polls6` = "Polls/Polls (Weekly Average)",
+                    `polls7` = "Polls/Polls (Rolling Mean)",
+                    `polls8` = "Polls (First Lag)/Polls (Weekly Average)",
+                    `polls9` = "Polls (First Lag)/Polls (Rolling Mean)"),
          subsets = factor(subsets,
                           levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
 

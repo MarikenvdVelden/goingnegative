@@ -53,4 +53,13 @@ h3 <- h3_1 %>%
                           `group1 = 1` = "Journalistic Intervention: Medium",
                           `group1 = 2` = "Journalistic Intervention: High"),
          subsets = factor(subsets,
-                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
+                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")),
+         x = recode(x,
+                    `ie1` = "Mean (CHES 2017)",
+                    `ie2` = "Median (CHES 2017)",
+                    `ie3` = "Mean (CHES 2014)",
+                    `ie4` = "Median (CHES 2014)",
+                    `ie5` = "Mean (MP 2017)",
+                    `ie6` = "Median (MP 2017)",
+                    `ie7` = "Mean (MP 2012)",
+                    `ie8` = "Median (MP 2012)"))

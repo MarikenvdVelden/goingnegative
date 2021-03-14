@@ -22,7 +22,7 @@ Analyses
 
 ``` r
 rm(list=ls())
-source(here::here("src/lib/functions.R"))
+source(here("src/lib/functions.R"))
 ```
 
 # Analyses
@@ -98,7 +98,7 @@ h2 %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
-             colour = subsets,
+             colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
   geom_point() + geom_errorbar() +
@@ -111,11 +111,11 @@ h2 %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
-        legend.position="none",
+        legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
-  guides(color=guide_legend(nrow=1,byrow=TRUE))
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
 ```
 
 <img src="../../report/figures/h2-1.png" style="display: block; margin: auto;" />
@@ -128,7 +128,7 @@ h3 %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
-             colour = subsets,
+             colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
   geom_point() + geom_errorbar() +
@@ -141,11 +141,11 @@ h3 %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
-        legend.position="none",
+        legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
-  guides(color=guide_legend(nrow=1,byrow=TRUE))
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
 ```
 
 <img src="../../report/figures/h3-1.png" style="display: block; margin: auto;" />
@@ -158,7 +158,7 @@ h4 %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
-             colour = subsets,
+             colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
   geom_point() + geom_errorbar() +
@@ -171,11 +171,11 @@ h4 %>%
         axis.title.y=element_blank(),
         axis.text.y=element_blank(),
         axis.ticks.y=element_blank(),
-        legend.position="none",
+        legend.position="bottom",
         legend.title = element_blank()) +
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
-  guides(color=guide_legend(nrow=1,byrow=TRUE))
+  guides(color=guide_legend(nrow=2,byrow=TRUE))
 ```
 
 <img src="../../report/figures/h4-1.png" style="display: block; margin: auto;" />
