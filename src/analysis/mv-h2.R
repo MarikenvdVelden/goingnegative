@@ -48,8 +48,8 @@ h2 <- h2_1 %>%
   add_row(h2_2) %>% 
   add_row(h2_3) %>%
   mutate(subsets = recode(subsets,
-                          `group1 = 0` = "Journalistic Intervention: Low",
-                          `group1 = 1` = "Journalistic Intervention: Medium",
+                          `group1 = 0` = "Journalistic Intervention: Absent",
+                          `group1 = 1` = "Journalistic Intervention: Moderate",
                           `group1 = 2` = "Journalistic Intervention: High"),
          x = recode(x,
                     `polls1` = "Polls/Seats",
@@ -62,5 +62,5 @@ h2 <- h2_1 %>%
                     `polls8` = "Polls (First Lag)/Polls (Weekly Average)",
                     `polls9` = "Polls (First Lag)/Polls (Rolling Mean)"),
          subsets = factor(subsets,
-                          levels = c("Journalistic Intervention: Low", "Journalistic Intervention: Medium", "Journalistic Intervention: High")))
+                          levels = c("Journalistic Intervention: Absent", "Journalistic Intervention: Moderate", "Journalistic Intervention: High")))
 
