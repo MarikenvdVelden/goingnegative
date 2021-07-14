@@ -63,4 +63,5 @@ h3 <- h3_1 %>%
                     `ie5` = "Mean (MP 2017)",
                     `ie6` = "Median (MP 2017)",
                     `ie7` = "Mean (MP 2012)",
-                    `ie8` = "Median (MP 2012)"))
+                    `ie8` = "Median (MP 2012)"),
+        p = if_else(p.value < 0.05, "p<.05", "p>.05"))

@@ -63,14 +63,15 @@ h1 %>%
          x = recode(x, 
                     `ji1` = "Daily Average",
                     `ji2` = "Daily Sum",
-                    `ji3` = "Deviation from Daily Average")) %>%
+                    `ji3` = "Deviation from Daily Average"),
+         p = if_else(p.value < 0.05, "p<.05", "p>.05")) %>%
   ggplot(aes(x = reorder(id, estimate),
              y = estimate,
              group = id,
              colour = x,
              ymin = conf.low,
              ymax = conf.high)) +
-  geom_point() + geom_errorbar() +
+  geom_point() + #geom_errorbar() +
   theme_minimal() +
   labs(x = "", y = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
   #title = "Effect of Journalistic Intervention on # Negative Appeals",
@@ -94,18 +95,45 @@ h1 %>%
 
 ``` r
 source(here("src/analysis/mv-h2.R"))
-h2 %>%  
+p2_1 <- h2 %>%  
+  filter(p.value<.05) %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
              colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
-  geom_point() + geom_errorbar() +
+  geom_point() + #geom_errorbar() +
   facet_grid(id~subsets, scales = "free") +
-  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model", 
 #       title = "Effect of Standing in the Polls on # Negative Appeals",
-#      subtitle = "Controlled for Ideological Extremity and Issue Ownership" ) +
+      subtitle = "P < .05" ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p2_2 <- h2 %>%  
+  filter(p.value>.05) %>%
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = x,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + #geom_errorbar() +
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model", 
+#       title = "Effect of Standing in the Polls on # Negative Appeals",
+      subtitle = "P > .05" ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
@@ -118,6 +146,8 @@ h2 %>%
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
   guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p2_1 / p2_2 + plot_layout(height = c(1, 1.25))
 ```
 
 <img src="../../report/figures/h2-1.png" style="display: block; margin: auto;" />
@@ -126,18 +156,45 @@ h2 %>%
 
 ``` r
 source(here("src/analysis/mv-h3.R"))
-h3 %>%  
+p3_1 <- h3 %>% 
+  filter(p.value < .05) %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
              colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
-  geom_point() + geom_errorbar() +
+  geom_point() + #geom_errorbar() +
   facet_grid(id~subsets, scales = "free") +
-  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model" ) + 
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
     #       title = "Effect of Ideologically Extremity on # Negative Appeals",
-  #       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
+        subtitle = "P < .05" ) +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p3_2 <- h3 %>% 
+  filter(p.value > .05) %>%
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = x,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + #geom_errorbar() +
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+    #       title = "Effect of Ideologically Extremity on # Negative Appeals",
+        subtitle = "P > .05" ) +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
@@ -150,6 +207,8 @@ h3 %>%
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
   guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p3_1 / p3_2 + plot_layout(height = c(1, 1.25))
 ```
 
 <img src="../../report/figures/h3-1.png" style="display: block; margin: auto;" />
@@ -158,19 +217,46 @@ h3 %>%
 
 ``` r
 source(here("src/analysis/mv-h4.R"))
-h4 %>%  
+p4_1 <- h4 %>%  
+  filter(p.value < .05) %>%
   ggplot(aes(y = reorder(id2, estimate),
              x = estimate,
              group = subsets,
              colour = x,
              xmin = conf.low,
              xmax = conf.high)) +
-  geom_point() + geom_errorbar() +
+  geom_point() + 
   facet_grid(id~subsets, scales = "free") +
-  labs(y = "", x = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
+  labs(y = "", 
+       x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       subtitle = "P < .05") +
   theme_minimal() +
-  #       title = "Effect of Issue Ownership  on # Negative Appeals",
-  #       subtitle = "Controlled for Standing in the Polls and Issue Ownership" ) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        axis.title.y=element_blank(),
+        axis.text.y=element_blank(),
+        axis.ticks = element_blank(),
+        panel.grid.major = element_blank(),
+        legend.position="none",
+        legend.title = element_blank()) +
+  scale_color_viridis_d() +
+  geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p4_2 <- h4 %>%  
+  filter(p.value > .05) %>%
+  ggplot(aes(y = reorder(id2, estimate),
+             x = estimate,
+             group = subsets,
+             colour = x,
+             xmin = conf.low,
+             xmax = conf.high)) +
+  geom_point() + 
+  facet_grid(id~subsets, scales = "free") +
+  labs(y = "", 
+       x = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       subtitle = "P > .05") +
+  theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         axis.title.y=element_blank(),
@@ -181,7 +267,9 @@ h4 %>%
         legend.title = element_blank()) +
   scale_color_viridis_d() +
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
-  guides(color=guide_legend(nrow=2,byrow=TRUE))
+  guides(color=guide_legend(nrow=3,byrow=TRUE))
+
+p4_1 / p4_2 + plot_layout(height = c(1, 1.25))
 ```
 
 <img src="../../report/figures/h4-1.png" style="display: block; margin: auto;" />

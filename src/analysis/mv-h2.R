@@ -61,6 +61,9 @@ h2 <- h2_1 %>%
                     `polls7` = "Polls/Polls (Rolling Mean)",
                     `polls8` = "Polls (First Lag)/Polls (Weekly Average)",
                     `polls9` = "Polls (First Lag)/Polls (Rolling Mean)"),
+         p = if_else(p.value < 0.05, "p<.05", "p>.05"),
          subsets = factor(subsets,
-                          levels = c("Journalistic Intervention: Absent", "Journalistic Intervention: Moderate", "Journalistic Intervention: High")))
+                          levels = c("Journalistic Intervention: Absent", 
+                                     "Journalistic Intervention: Moderate", 
+                                     "Journalistic Intervention: High")))
 

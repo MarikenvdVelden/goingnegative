@@ -52,4 +52,5 @@ h4 <- h4_1 %>%
                     `io1` = "Associative Issue Ownership",
                     `io2` = "Competence Issue Ownership (Mean)",
                     `io3` = "Competence Issue Ownership (Median)",
-                    `io4` = "Competence Issue Ownership (St.Dev.)"))
+                    `io4` = "Competence Issue Ownership (St.Dev.)"),
+         p = if_else(p.value < 0.05, "p<.05", "p>.05"))
