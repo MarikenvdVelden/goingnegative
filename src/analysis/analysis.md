@@ -73,9 +73,9 @@ h1 %>%
              ymax = conf.high)) +
   geom_point() + #geom_errorbar() +
   theme_minimal() +
-  labs(x = "", y = "Estimates of Generalized Linear Mixed-Effects Poisson Model") +
-  #title = "Effect of Journalistic Intervention on # Negative Appeals",
-  #subtitle = "Controlled for Standing in Polls, Ideological Extremity and Issue Ownership" ) +
+  labs(x = "", 
+       y = "Estimates of Generalized Linear Mixed-Effects Poisson Model",
+       subtitle = "P < .05") +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         axis.title.y=element_blank(),
@@ -147,7 +147,7 @@ p2_2 <- h2 %>%
   geom_vline(xintercept = 0, size = .2, linetype = "dashed") +
   guides(color=guide_legend(nrow=3,byrow=TRUE))
 
-p2_1 / p2_2 + plot_layout(height = c(1, 1.25))
+p2_1 / p2_2 + plot_layout(height = c(1, 1.15))
 ```
 
 <img src="../../report/figures/h2-1.png" style="display: block; margin: auto;" />
