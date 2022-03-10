@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.3.20)  10 MAR 2022 07:49
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2020.3.20)  10 MAR 2022 08:00
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1049,7 +1049,7 @@ LaTeX Font Info:    Try loading font information for T1+lmtt on input line 734.
 File: t1lmtt.fd 2009/10/30 v1.6 Font defs for Latin Modern
 ) [12]
 
-LaTeX Warning: Float too large for page by 10.97403pt on input line 829.
+LaTeX Warning: Float too large for page by 10.97403pt on input line 828.
 
 
 LaTeX Warning: `!h' float specifier changed to `!ht'.
@@ -1062,7 +1062,7 @@ File: /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h1
 <use /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h1-
 1.png>
 Package pdftex.def Info: /Users/marikenvandervelden/Dropbox/Papers/goingnegativ
-e/report/figures/h1-1.png  used on input line 953.
+e/report/figures/h1-1.png  used on input line 952.
 (pdftex.def)             Requested size: 281.85587pt x 281.84525pt.
 [17
 
@@ -1075,7 +1075,7 @@ File: /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h2
 <use /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h2-
 1.png>
 Package pdftex.def Info: /Users/marikenvandervelden/Dropbox/Papers/goingnegativ
-e/report/figures/h2-1.png  used on input line 988.
+e/report/figures/h2-1.png  used on input line 987.
 (pdftex.def)             Requested size: 375.80544pt x 469.75679pt.
 [18 </Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h2-
 1.png>] [19]
@@ -1086,7 +1086,7 @@ File: /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h3
 <use /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h3-
 1.png>
 Package pdftex.def Info: /Users/marikenvandervelden/Dropbox/Papers/goingnegativ
-e/report/figures/h3-1.png  used on input line 1061.
+e/report/figures/h3-1.png  used on input line 1060.
 (pdftex.def)             Requested size: 281.85587pt x 352.30656pt.
 [20 </Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h3-
 1.png>]
@@ -1097,48 +1097,48 @@ File: /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h4
 <use /Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figures/h4-
 1.png>
 Package pdftex.def Info: /Users/marikenvandervelden/Dropbox/Papers/goingnegativ
-e/report/figures/h4-1.png  used on input line 1108.
+e/report/figures/h4-1.png  used on input line 1107.
 (pdftex.def)             Requested size: 281.85587pt x 352.30656pt.
 
 LaTeX Warning: `h' float specifier changed to `ht'.
 
 [21] [22 </Users/marikenvandervelden/Dropbox/Papers/goingnegative/report/figure
 s/h4-1.png>] [23] [24] [25] [26]
-Overfull \hbox (6.06969pt too wide) in paragraph at lines 1388--1394
+Overfull \hbox (6.06969pt too wide) in paragraph at lines 1387--1393
 \T1/lmr/m/n/10.95 Across Six Coun-tries.'' \T1/lmr/m/it/10.95 So-cial Me-dia + 
 So-ci-ety\T1/lmr/m/n/10.95 , 1--14. [][]$https : / / doi . org / 10 . 1177 / 20
 56305118823358$[][]. 
  []
 
 
-Overfull \hbox (268.76222pt too wide) in paragraph at lines 1442--1446
+Overfull \hbox (268.76222pt too wide) in paragraph at lines 1441--1445
 \T1/lmr/m/n/10.95 of Pop-ulist Rad-i-cal Right and Left.'' [][]$https : / / sit
 es . duke . edu / dukefps / ^^\les / 2018 / 04 / Kitschelt-[]2018-[]Simpletons-
 []Sketch-[]of-[]Politics-[]in-[]Knowledge-[]Societies .
  []
 
 [27]
-Overfull \hbox (0.42589pt too wide) in paragraph at lines 1540--1546
+Overfull \hbox (0.42589pt too wide) in paragraph at lines 1539--1545
 []\T1/lmr/m/n/10.95 Polk, Jonathan, Jan Rovny, Ryan Bakker, Er-ica Ed-wards, Li
 es-bet Hooghe, Seth Jolly, Jelle Koedam,
  []
 
 
-Overfull \hbox (8.9347pt too wide) in paragraph at lines 1547--1552
+Overfull \hbox (8.9347pt too wide) in paragraph at lines 1546--1551
 \T1/lmr/m/n/10.95 ter). 2017. ``Tweede Kamerverkiezin-gen 2017/Peilin-gen.'' []
 []$https : / / nl . wikipedia . org / wiki / Tweede _
  []
 
 [28] [29] [30]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1703.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 1703.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1702.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1702.
 (./draft.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1703.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1703.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1702.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1702.
 
 Package rerunfilecheck Info: File `draft.out' has not changed.
 (rerunfilecheck)             Checksum: 911A4818A629F9DBB406597EE38CE421;666.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1703.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1702.
  ) 
 Here is how much of TeX's memory you used:
  24484 strings out of 492616
@@ -1166,7 +1166,7 @@ exlive/2019/texmf-dist/fonts/type1/public/lm/lmri9.pfb></usr/local/texlive/2019
 t/fonts/type1/public/lm/lmsy6.pfb></usr/local/texlive/2019/texmf-dist/fonts/typ
 e1/public/lm/lmtt10.pfb></usr/local/texlive/2019/texmf-dist/fonts/type1/urw/hel
 vetic/uhvb8a.pfb>
-Output written on draft.pdf (30 pages, 690033 bytes).
+Output written on draft.pdf (30 pages, 691201 bytes).
 PDF statistics:
  532 PDF objects out of 1000 (max. 8388607)
  470 compressed objects within 5 object streams

@@ -288,7 +288,7 @@ On average 4.77 appeals made per day, with a standard variation of 5.55 (see Tab
 If appeals appeared on political parties' Facebook pages, we assigned the value `0` to indicate that there was no journalistic intervention.
 If appeals appeared on TV shows, we assigned the value `0.5` to indicate tat there was moderate journalistic intervention.
 Finally, if appeals appeared in newspaper articles, we assigned the value `1` to indicate that there was high journalistic intervention.
-Because our unit of analysis is `party\_day`, we have to aggregate the journalistic intervention to a daily level.
+Because our unit of analysis is $party\_day$, we have to aggregate the journalistic intervention to a daily level.
 Subsequently, we created three measures of journalistic intervention (see Table \ref{tab:descr}. 
 Our first measure takes the mean value of journalistic intervention per day, with a range between 0-1 (`M = 0.15`, `St.Dev = 0.30`).
 Our second measure takes the sum of journalistic intervention per day, with a range between 0-20 (`M = 1.25`, `St.Dev = 3.12`).
