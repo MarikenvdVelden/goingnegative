@@ -1,0 +1,524 @@
+---
+output: 
+  stevetemplates::article:
+    fig_caption: true
+urlcolor: black
+linkcolor: black
+header-includes:
+   - \usepackage{floatrow}
+   - \floatsetup[figure]{capposition=top}
+   - \floatsetup[table]{capposition=top}
+   - \usepackage{booktabs}
+   - \usepackage{longtable}
+   - \usepackage{array}
+   - \usepackage{multirow}
+   - \usepackage{wrapfig}
+   - \usepackage{float}
+   - \usepackage{colortbl}
+   - \usepackage{pdflscape}
+   - \usepackage{tabu}
+   - \usepackage[para,online,flushleft]{threeparttable}
+   - \usepackage{threeparttablex}
+   - \usepackage[normalem]{ulem}
+   - \usepackage{makecell}
+   - \usepackage{xcolor}
+   - \usepackage{hyperref}
+   - \usepackage{array}   
+   - \usepackage{caption}
+   - \usepackage{graphicx}
+   - \usepackage{epstopdf}
+   - \usepackage{siunitx}
+   - \usepackage{multirow}
+   - \usepackage{hhline}
+   - \usepackage{calc}
+   - \usepackage{tabularx}
+   - \usepackage{fontawesome}
+   - \usepackage{amsthm}
+   - \newtheorem{hypo}{Hypothesis}
+   - \usepackage{setspace}
+   - \doublespacing   
+biblio-style: apsr
+title: "When the Cat’s Away, the Mice will Play? How Journalistic Intervention Influences Political Parties' Decision to Go Negative"
+author:
+  - name: Mariken A.C.G. van der Velden
+  - affiliation: Vrije Universiteit Amsterdam
+  - name: Dirck de Kleer
+  - affiliation: Bocconi University Milan
+anonymous: FALSE
+thanks: "Replication files are available on the author's Github account (https://anonymous.4open.science/r/c2b8960a-17ee-4a76-a4c7-68f8bbc99b4c/). **Current version**: `r format(Sys.time(), '%B %d, %Y')`; **Corresponding author**: m.a.c.g.vander.velden@vu.nl."
+abstract: "_Negative campaigning is widely studied in the context of American and Western European elections. Studies that seek to explain when political actors 'go negative' often locate these determinants in contextual or party characteristics, such as parties’ position in the polls, their incumbency status or political ideologically. Against the backdrop of our current high-choice media environment, a crucial element that is often overlooked is that parties can also weigh their rhetorical strategies across communication channels, based on the amount of journalistic intervention that takes place and the audience political parties can reach. Focusing on the 2017 Dutch General Elections, we examine how Dutch political parties use negative campaigning strategies across different communication channels. Analyzing 1490 appeals that appeared in newspaper articles, talk shows and in parties' Facebook posts, we show that an increase in journalistic intervention is associated with more negative appeals. Our findings highlight the importance of studying communication channels in comparative perspective and add more nuance to our understanding of rhetorical strategies during campaigns._"
+keywords: "Negative Campaigning, High-Choice Media Environment, Polling, Issue Ownership, Multiverse Analysis"
+bibliography: \singlespacing bibliography.bib
+geometry: margin=1in
+mainfont: cochineal
+fontsize: 11pt
+params:
+  anonymous: ""
+  doublespacing: ""
+doublespacing: TRUE
+endnote: no
+pandocparas: TRUE
+sansitup: FALSE
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE,
+                      message=FALSE, warning=FALSE)
+options(kableExtra.latex.load_packages = FALSE)
+options(scipen = 1, digits = 2)
+knitr::opts_chunk$set(fig.pos = "h", out.extra = "")
+
+# Uncomment below if you want code captions
+# oldSource <- knitr::knit_hooks$get("source")
+# knitr::knit_hooks$set(source = function(x, options) {
+#   x <- oldSource(x, options)
+#   x <- ifelse(!is.null(options$code.cap), paste0(x, "\\captionof{chunk}{", options$code.cap,"}"), x)
+#   ifelse(!is.null(options$ref), paste0(x, "\\label{", options$ref,"}"), x)
+# })
+# Add `chunkcaption: TRUE` to YAML as well.
+```
+
+# Introduction
+Negative campaigning is widely studied in the American and West European context [e.g. for overviews, see @haselmayer2019negative; @mattes2015positive; @geer2008defense; @nai2015negative; @hansen2008negative; @lau2009negative].
+This has resulted in a rich academic debate on the determinants of negative campaigning strategies during elections in two-party and multi-party systems. 
+The majority of studies in this field locate these determinants of `going negative' in the electoral context [for overviews, see e.g. @nai2015negative; @haselmayer2019negative; @lau2009negative]. 
+More recent studies [@nai2020negative; @walter2014stakes], most notably in multi-party contexts, also highlight the importance of party characteristics.
+In addition, parties' perceived issue credibility plays into parties' rhetorical choices [e.g., see @elmelund2011issue].
+
+While the existing state of the field paints a fine-grained picture of strategic considerations from the party perspective, a crucial element remains largely absent: 
+_How do parties weigh their rhetorical strategies across communication channels_?[^1]
+Scholars of communication science indicate that political actors take into account the constraints of journalistic intervention -- i.e. the level of control political actors exert over the ways their messages are conveyed to the electorate [@paletz2002media] -- and the audience they try to reach with their campaign messages [@ernst2019populists; @ballard2016campaigning; @baum2013presidential; @walter2010negative].
+Yet, understanding political actors' choices in a high-choice media environment [@van2017political], as well as the dynamics between political actors and journalists, requires an analysis of a more diverse set of communication channels that also includes social media platforms.[^2]
+
+[^1]: The work by @walter2010negative also addresses this question, yet their data does not allow to test the question including social media data, where scholars have shown the dynamics, especially of uncivil and negative rhetoric are different [e.g., see @goyanes2021social; @rheault2019politicians].
+
+[^2]: With some notable exceptions [@russmann2017negative; @walter2010negative], we currently lack this overview.
+
+
+Demonstrating how parties craft their rhetorical strategies based on the particular media landscape is important, because the media landscape itself has changed fundamentally in the last decade. 
+This change, in turn, drastically altered how political information is disseminated and consumed [@van2017political]. 
+A cross-media analysis of campaign appeals thus tells us more about the ways in which political actors exploit the absence of journalistic intervention to their electoral benefit. 
+Recent events underline how unmediated political communication can have serious political consequences.
+Donald Trump's suspension from Twitter [@Twitter2021] following the Capital storming is a case in point. 
+Moreover, during the 2021 Dutch Parliamentary elections, Twitter decided to delete Dutch far-right politician Thierry Baudet's Tweet with false claims about vaccines. 
+These suspensions are not isolated cases [@worldleaders].
+
+In this paper, we theorize and demonstrate that political parties rhetorically exploit the lack of journalistic intervention to reap electoral gains. 
+We further show how journalistic intervention impacts campaign appeals, by analyzing the moderating role of common determinants of negative campaigning -- such as parties' standing in the polls, ideological extremity and issue ownership.
+We utilize data from the 2017 Dutch elections.
+We have collected a unique data set of 1490 manually coded appeals which we combine with polling data [@polls], survey data [@Krouwel2016; @ches] and data from the Manifesto Project [@cmp].[^3]
+Conducting a multiverse analysis [see @steegen2016increasing; @simonsohn2019specification], we show that journalistic intervention has a direct effect on parties' use of negative appeals: the higher levels of journalistic intervention -- regardless of measurement choices -- the more likely parties are to make negative appeals.
+We find mixed results for the effect of issue ownership, standing in the polls, and ideological extremity on parties' decision to go negative.
+Our multiverse approach shows that the way one operationalizes these concepts affects the outcomes one get.
+
+[^3]: All our materials can be found at (https://anonymous.4open.science/r/c2b8960a-17ee-4a76-a4c7-68f8bbc99b4c/) -- anonymized for the reviewing process.
+
+Our evidence thus suggests that communication channels are important determinants of the rhetoric we see in Dutch campaign messages. 
+In line with @walter2010negative, we show that campaign communication strategies differ across platforms and that this holds true in a high-choice media environment. 
+Particularly, we show that the absence of journalistic intervention drives many parties to employ a more positive rhetoric than on other communication channels. 
+This finding could be explained by the journalistic profession:
+While journalists act as watch dogs safeguarding democratic principles [@bennett2005watchdog], they also report on news events relying heavenly on the news values negativity and conflict [@ridout2015news; @helfer2016makes]. 
+Moreover, as negativity drives higher news coverage [@geer2012news; @maier2020roaring], which in turn leads to bigger attention from the public, parties have an incentive to highligh negative information to journalists.
+Our analysis therefore sheds new light on the interconnections between news values and campaign rhetoric.
+Methodologically our multiverse analysis shows that substantive outcomes strongly depend on how researchers construct their variables of interest, which has important implications for both the field of political and communication science. 
+
+
+# Parties' Strategic Behavior in a High Choice Media Environment
+One of the key objectives that guides political parties' behavior during campaigns is obtaining votes [@muller2003coalition].
+Ideally, political parties maximize their own vote share, while diminishing the support for their political opponents. 
+To achieve this, one of the strategic tools they have at their disposal is the use of negative campaigning.
+Leveling criticism at political opponents, using the definition of negative campaigning by @geer2008defense,[^4] can be a strategic tool to gain the support of voters who are still undecided, as well as to diminish the support for one's political opponents.
+For example, parties can question the competence, honesty, or ways of handling problems and issues in the past, present or future of their opponents [@nai2020negative]. 
+But this strategy is not without risk.
+While there are possible electoral pay-offs (i.e. vote gains), political parties might face a backlash.
+Inadvertently, a negative campaigning strategy may reduce the support for ones' own party [@lau2009negative] or might demobilize key electorates [@ansolabehere1994does].
+In a multiparty context, the potential backlash effects are even stronger: 
+Attacks leveled at political opponents may not only reduce support for one's own party or demobilize voters, but can also hinder post-election bargaining processes [@walter2014stakes]. 
+
+[^4]: In contrast, positive campaigning involves statements or claims why a political actor or party should deserve your vote [@geer2008defense].
+
+Negative campaigning, then, becomes a matter of risk-based decision making. 
+Under certain circumstances, leveling criticism at political opponents might pay off while other circumstances might not yield any benefit. 
+The current literature on negative campaigning offers great insight into these mechanisms, showing what kind of parties or candidates are inclined to go negative and under what electoral circumstances [@haselmayer2019negative; @nai2020negative]. 
+However, what is surprising is that most studies often focus their analysis of campaign appeals on just one communication channel:
+Studies have mainly looked at election broadcasts [@walter2014stakes; @lau2009negative; @geer2008defense]. 
+These broadcasts offer a great benefit in terms of comparability over time and between countries and parties.
+Yet, they are barely representative of our current high-choice media environment.   
+This is problematic, because political actors' campaign strategies and messages differ across communication channels in terms of their content and framing [@ernst2019populists; @van2017political; @ballard2016campaigning].
+The focus on too few media channels may lead to incomplete conclusions, because it fails to account for the strategic choices parties make when disseminating their campaign messages across various channels [@walter2010negative].
+
+To understand how political actors weigh their negative campaigning strategies in a high-choice media environment, we consider two interrelated media characteristics: the _format_ of the communication channel and its _audience_. 
+In terms of the format, communication channel formats come with varying degrees of constraint. 
+These constraints have been described as the level of control political actors exert over their messages [@paletz2002media] -- also called opportunity structures [@ernst2019populists]. According to @paletz2002media campaign messages can either be subjected to high, moderate or no journalistic intervention.
+Besides navigating different levels of journalistic intervention, we also take into account that political actors' media appearances are motivated by reaching certain audiences. 
+More specifically, we adopt @baum2013presidential's framework of political communication strategies in relation to media types. 
+Political actors either try to 'convert the flock', which entails that they try to attract new voters, or 'preach to the choir', which entails that they try to mobilize core supporters [@baum2013presidential].
+
+Communication channels without journalistic intervention -- i.e. where political actors have full control over the way their messages reaches the audience; which is the case for social media platforms such as Facebook -- have the advantage that political actors enjoy the freedom to promote themselves without contradiction or critical notes from journalists [@ernst2019populists]. 
+At the same time, these channels, such as social media platforms, blogs, or websites, only appeal to more narrow audiences [@ballard2016campaigning; @baum2013presidential; @hillygus2008persuadable].
+Hence, these communication channels are more suitable for a 'preaching to the choir' strategy.
+Positive claims about what political actors have done in the past or will do in the future will be most efficacious to mobilize or enthuse core supporters [@ballard2016campaigning]. 
+Moreover, because of the lack of journalistic intervention, political actors do not have to prove the veracity of their claims to journalists.
+
+When the level of journalistic intervention goes up, a self-promoting strategy becomes more difficult. 
+Parties are constrained by journalistic formats and methods of news selection that favor negativity and conflict as news values [@kleinnijenhuis2020televised; @ridout2015news].
+This is reflected in the format of political talk shows.
+These have moderate levels of journalistic control [@ernst2019populists; @paletz2002media].
+Political talk shows allow parties to voice their stances, yet the interruptive, adversarial, and combative format [@boukes2016politician] ensures that parties adapt their message to that format. 
+In traditional news media, such as newspapers, that have high levels of journalistic intervention [@paletz2002media], the focus on negativity and conflict make it more likely that negative appeals make it into the news rather than the less newsworthy positive appeals of political actors [@ridout2015news].
+Besides the format, media channels with higher levels of journalistic intervention also cater to larger audiences. 
+Both from the demand (media) and the supply (political actors) side perspective, this creates favorable pathways to 'go negative'.  
+More specifically, the opportunity to reach a relatively large cross-section of society without costs offers political parties the ideal outlet to persuade voters beyond their own voter's base and to 'convert the flock' [@baum2013presidential].
+Rhetorically, this means they do not only need to point out why their own party is good (e.g. a positive appeal), but also why their competitors are bad (e.g. a negative appeal). 
+
+\begin{hypo}[H\ref{hyp:first}] \label{hyp:first}
+ The more journalistic intervention on a communication channel, the more negative appeals made by a political party.
+\end{hypo}
+
+Taking media environments into account also casts new light on the determinants of negative campaigning strategies that have been discussed extensively in the literature. 
+One of these is parties' standing in the polls [@elmelund2011issue]. 
+Grounded in the prospect-theoretical work of Tversky and Kahnemann [-@tversky1992advances; -@kahneman1979prospect; -@tversky1974judgment], prospective losses in the polls are theorized and demonstrated to lower the threshold to go negative [@nai2020negative; @lau2009negative].
+We expect that this mechanism is particularly pronounced in a multi-party context, because the costs of negative campaigning are higher and the benefits less clear [e.g. because of post-election bargaining, @walter2014stakes] .
+This was exemplified in the 2006 Dutch Elections where former prime-minister Jan-Peter Balkenende of the incumbent _Christian Democrats_ was facing substantial losses in the polls and infamously criticized _Social Democratic_ party leader Wouter Bos for 'being a flip-flopper and insincere' on national television [@van2007dutch; @kleinnijenhuis2007].
+While the benefit for the Christian Democrats might have been that they narrowly won over the Social Democrats, the relationship in the fourth Balkenende cabinet with Bos has never been restored [@kleinnijenhuis2007].
+Although studies show mixed evidence in support of the poll standing hypothesis [e.g. @walter2014stakes; @lau2009negative], most of these studies are based on election broadcasts. 
+We expect to differ over the type of media channels:
+It is particularly pronounced on communication platforms with higher levels of control, since these platforms typically reach a large and persuadable audience and are more responsive to changes in the polls than election broadcasts.
+
+\begin{hypo}[H\ref{hyp:second}] \label{hyp:second}
+ The more journalistic intervention on a communication channel, the more negative appeals made by political parties with negative prospects in the polls.
+\end{hypo}
+
+Ideologically more extreme parties are more likely to use negative campaigning strategies [@nai2020negative].
+Several explanations may account for this.
+First, parties that are ideologically more extreme have less potential to become a part of a coalition which affords them more risk [@walter2014stakes].
+In addition, more ideologically extreme parties are more likely to adopt a populist mode of appeal [@rooduijn2017flank].
+Therefore, the criticism of political opponents we find in negative campaigning is to a large extent endogenous to more extreme parties' populist mode of appeal [@kitschelt2018simpleton].
+For these reasons, we expect to find more attacks from ideologically extreme parties. 
+More specifically, we argue that the effect of ideological extremity on the amount of negative appeals is particularly pronounced on communication platforms without journalistic intervention.
+Although we expect that parties are generally more positive on communication channels without journalistic intervention, ideologically more extreme parties have a less obvious repertoire of successes on which they can base their positive claims due to their lack of government experience. 
+Thus, not positive claims but a populist mode of appeal might be their rhetorical weapon of choice, which is further accommodated by the direct link between citizens and political actors offered by sites without journalistic intervention [@ernst2019populists].
+
+\begin{hypo}[H\ref{hyp:third}] \label{hyp:third}
+ The fewer journalistic intervention on a communication channel, the more negative appeals made by political parties with more extreme ideological positions.
+\end{hypo}
+
+A key function of campaigns is to communicate issues to voters [@sides2006origins].
+Surprisingly, only very few studies consider how issues moderate political actors' rhetorical strategies [@seeberg2020undermining; @elmelund2011issue].
+Including issues in the study of negative campaigning is critically important however.
+First, because voters increasingly identify parties on the basis of political issues instead of ideologies [@elmelund2011issue].
+Second, as a consequence of the former development, we know that parties strategically try to exploit this issue credibility advantage during campaigns [@riker1984heresthetics].
+We therefore expect that issues also play a role in parties' decision to go negative. In line with @elmelund2011issue, we expect that parties will employ more positive rhetoric when talking about owned issues because they can draw on their reputational stock to claim successes (i.e. use positive appeals). 
+Moreover, we expect that the negative effect of issue ownership on the amount of negative appeals becomes stronger as journalistic intervention decreases. 
+This is because the lack of journalistic intervention offers more favorable opportunities to self-promote and mobilize and enthuse core supporters by pointing toward past or future successes [@ballard2016campaigning].
+In addition, parties are more likely to deviate from their own issue agendas to attract new or undecided voters [@aldrich2003presidency], which is most effectively done through communication channels with higher journalistic intervention (e.g. talk shows and newspapers) [@baum2013presidential}.[^5]
+
+[^5]: See @damore2002candidate for the exact opposite reasoning. 
+
+\begin{hypo}[H\ref{hyp:fourth}] \label{hyp:fourth}
+ The fewer journalistic intervention on a communication channel, the fewer negative appeals made by political parties on issues they own.
+\end{hypo}
+
+# Data, Measurement \& Method of Estimation
+To investigate how journalistic intervention conditions parties' rhetorical strategy, we study the Dutch 2017 elections.
+We combine new manually annotated data with negative appeals made on various communication platforms with collected polling data [@polls], data from  the Chapel Hill Expert Survey [@ches], the Manifesto Project [@cmp], and data from KiesKompas [@Krouwel2016] to test Hypotheses \ref{hyp:first} -- \ref{hyp:fourth}.
+Our online research compendium [^6] demonstrates how these data sources are connected and visualizes the data.
+
+[^6]: (https://anonymous.4open.science/r/c2b8960a-17ee-4a76-a4c7-68f8bbc99b4c/) -- anonymized for the reviewing process.}
+
+## Manually Annotated Data
+To study parties' strategic campaign rhetoric, we focus on the appeals they make in several communication platforms: a) in articles published in newspapers _De Telegraaf_ and _de Volkskrant_;[^7] b) during talk shows _Pauw & Jinek_, _WNL op Zondag_, _Tijd voor Max_ on TV;[^8] and c) on their social media channel Facebook.[^9]
+These communication platforms vary in their degrees of journalistic intervention.
+Newspapers have a high level of journalistic intervention, since the final product is primarily an outcome of decision-making among media actors [@paletz2002media].
+Talk shows have a moderate level of journalistic intervention. While the format and questions are largely determined by media actors [@paletz2002media], the space and time to discuss ideas is typically shared between media and political actors.
+Lastly, while Facebook has platform guidelines in place, there is no _journalistic_ intervention.
+We focus on the Dutch campaign period, which typically last four weeks [@walter2014stakes; @kleinnijenhuis2020televised], from the 15th of February 2017 till the day before the elections (i.e. March the 14th of the same year).
+
+[^7]: We include _De Telegraaf_ and _De Volkskrant_ as right-leaning tabloid and left-leaning quality newspapers respectively to give a somewhat representative image of Dutch newspaper coverage [@walter2010negative].
+
+[^8]: We also include a representative selection of talk shows on TV. Talk show _Pauw & Jinek_ was a daily talk show that focused primarily on politics and was broadcasted by left-oriented broadcaster _BNN-VARA_. _WNL Op Zondag_ is a weekly talk show that focuses on politics, entrepreneurship and culture and is broadcasted by right-oriented broadcaster _Wij Nederland(WNL)_. Finally, _Tijd voor Max_ is a daily talkshow that focuses on lifestyle and health topics and is broadcasted by broadcaster _MAX_ who primarily targets an audience over the age of 65.
+
+[^9]: Unlike Twitter, which often takes the center in social media campaign research [@stier2018election], Facebook gives political parties more opportunities and space to make appeals since there is no character limit [@ernst2019populists].
+
+To investigate the relationship between parties' rhetoric and issues, we annotate _issue-based_ appeals in our analysis (see Appendix for details of the manual annotation instructions). 
+Issue-based appeals are appeals connected to the policies and plans of a political actors (i.e. how they have handled certain policies or plans in the past, in the present or will handle in the future).
+Like other appeals [@geer2008defense; @walter2014stakes], they can take on two forms: they are either _positive_ or _negative_.
+An appeal is negative if a party criticizes their political opponent(s) policies and or plans and an appeal is positive if a party praises itself or makes claims in relation to plans or policies.
+Hence, we do not include mobilization appeals or appeals that only focus on the personal characteristics or traits (e.g. competence, honesty) of political actors.
+Moreover, we only include _written and spoken appeals_ made by political parties and politicians -- not just the party leader, but also other politicians that were on the ballot list.[^10]
+We chose this approach because campaigns in a party-oriented (versus candidate-oriented) political system like that of the Netherlands are a 'team sport' including campaign efforts by multiple candidates on the party list.
+Thus, following [@walter2010negative], we included quoted or paraphrased campaign messages from political candidates.
+
+[^10]: For coding the articles published in _De Telegraaf_ and _de Volkskrant_ [using data stored in AmCAT, @van2014inhoudsanalyse], this implies that we only include appeals made by party candidates, not by journalists. To annotate the appeals made in the TV talk shows, this implies that we only include appeals made by party candidates, not by talk show host(s), other guests that are present at the table, or from member of the audience. We also exclude non-verbal cues from our analysis. While we recognize that these cues are an important part of political actors' television performance [@druckman2003power], they require a different empirical strategy than the one we use in this study. To annotate the appeals made on parties' Facebook page, we include appeals that appeared in the text message, that appeared as text in a photo, that appeared as text or as a spoken appeal in a Facebook video, or that were part of a link description or link title.
+We excluded live videos as well as comments, reactions and shares from our analysis. While we acknowledge that these can be meaningful components of online campaign messages [e.g. @asker2017online], they are beyond the scope of our study.
+
+In total, 1490 appeals where made by political parties: 
+925 of those appeals were sourced from political parties' Facebook pages, 275 from newspaper articles, and 290 from tv-shows.[^11]
+We randomly selected appeals for inter-coder reliability. 
+[@krippendorff12, p.240] recommends at least 127 documents for determining inter-coder reliability for this case ($P_c =.50; \alpha \geq.8; sig. \leq.005$).
+We therefore annotated 200 appeals, using the instructions in Appendix.
+The initial inter-coder agreement of this coding was Cohen's $\kappa=0.92$ for the issue theme, and Cohen's $\kappa=0.87$ for negative appeals. 
+All disagreements were discussed between the authors and resolved where possible.
+
+[^11]: For modelling purposes (see Section Method of Estimation for details), we aggregate our data to the daily level, leaving us with 336 observations (i.e. 28 days for the 12 parties in this study). All our materials are available in our online research compendium (see (https://anonymous.4open.science/r/c2b8960a-17ee-4a76-a4c7-68f8bbc99b4c/) -- anonymized for the reviewing process).}
+
+
+Figure \ref{fig:overview} shows the distributions in percentages of the total number of appeals a party makes for the several communication channels.
+The left-hand panel of Figure \ref{fig:overview} shows the percentages of negative appeals, and the right hand channel shows the positive appeals.
+What stands out is that for all media types, parties make more positive appeals than negative appeals, especially the Animal Rights Party (PvdD) on Facebook.
+Second, we see that in newspapers (top of Figure \ref{fig:overview}) the fewest negative appeals are made, and on social media (bottom of Figure \ref{fig:overview} the most negative appeals are made.
+In newspapers, former government parties (VVD and PvdA) are making most of the negative appeals.
+For TV shows (middle of Figure \ref{fig:overview}), we see that most of the negative appeals are made in the daily evening talk show \textit{Pauw en Jinek}, especially by the Liberal Conservative (VVD), Socialist Party (SP), Greens (GL), and Democrats '66 (D66). In 10 percent of the time they are on TV, they make negative appeals.
+To compare, in about 20 percent of the time they are on TV, they make positive appeals.
+On social media, the Socialist Party (SP), the Greens (GL), and Forum for Democracy (FvD) are most negative: in about 20 percent of their appeals they choose to level criticism at their political opponents. 
+
+```{r descr,out.width = "55%", fig.align = 'center', fig.cap = "\\label{fig:overview}Overview of Positive and Negative Appeals made by Dutch Political Parties"}
+knitr::include_graphics(here::here("report/figures", "overview-1.png"))
+```
+
+## Measurement of Variables under Study
+In our study, we measure the variables under study in various ways to increase the robustness of our tests -- in the Methods subsection, we detail our approach.
+
+**Dependent Variable: Negative Appeals.** The dependent variable under study is the amount of negative appeals a party makes on a day.
+This results in a variable ranging from 1 to 30 negative appeals a day.
+On average 4.77 appeals made per day, with a standard variation of 5.55 (see Table \ref{tab:descr}), indicating that in most days 0 to 15 appeals are made by political parties.
+
+**Independent Variable: Journalistic Intervention.** To investigate whether parties employ different rhetorical strategies dependent on the level of journalistic control (H\ref{hyp:first} -- H\ref{hyp:fourth}), we use @paletz2002media's three-way classification of journalistic intervention.
+%We transform this classification into an interval scale.
+If appeals appeared on political parties' Facebook pages, we assigned the value `0` to indicate that there was no journalistic intervention.
+If appeals appeared on TV shows, we assigned the value `0.5` to indicate tat there was moderate journalistic intervention.
+Finally, if appeals appeared in newspaper articles, we assigned the value `1` to indicate that there was high journalistic intervention.
+Because our unit of analysis is `party\_day`, we have to aggregate the journalistic intervention to a daily level.
+Subsequently, we created three measures of journalistic intervention (see Table \ref{tab:descr}. 
+Our first measure takes the mean value of journalistic intervention per day, with a range between 0-1 (`M = 0.15`, `St.Dev = 0.30`).
+Our second measure takes the sum of journalistic intervention per day, with a range between 0-20 (`M = 1.25`, `St.Dev = 3.12`).
+Our last measure takes the deviation from the mean value of journalistic intervention per day by subtracting this mean value from the sum of journalistic intervention. 
+This results in a variable with a 0 to 19.2 range (`M = 1.10`, `St.Dev = 2.91`).
+
+**Independent Variable: Standing in the Polls.** To test whether parties' electoral fortunes moderate the relation between parties' rhetorical strategies and the level of journalistic intervention (H\ref{hyp:second}), we use polling data from the five most well-known Dutch polling companies [@polls]. 
+There are several ways in which one could measure parties' electoral fortunes, and therefore we operationalize how well parties do in the polls in nine different ways (see Table \ref{tab:descr}).
+Our first measure divides the polled seats by parties' current parliamentary seats during the election (`M = 1.59`, `St.Dev = 1.27`).
+In our second measure we repeat this step but lag the polled amount of seats by one day (`M = 1.58`, `St.Dev = 1.28`). 
+Our third measure divides the weekly average of parties' polled seats by parties' current parliamentary seats (`M = 1.57`, `St.Dev = 1.31`), and in our fourth measure we substitute the rolling mean for the weekly average (`M = 1.59`, `St.Dev = 1.23`).
+Our fifth measure divides parties' polled seats by the lagged polled seats (`M = 0.96`, `St.Dev = 0.36`), and in our sixth and seventh measure we substitute the weekly average (`M = 0.94`, `St.Dev = 0.37`) and rolling meaning for the lagged polled seats respectively (`M = 0.94`, `St.Dev = 0.32`). 
+Lastly, our eighth measure divides parties' lagged polled seats by the weekly average of parties' polled seats (`M = 0.95`, `St.Dev = 0.38`), and in our ninth measure we substitute the rolling mean for this weekly average (`M = 0.94`, `St.Dev = 0.29`). 
+As lines 6 to 14 of Table \ref{tab:descr} show, the measures with the current seats as a denominator that on average, parties increase their number of seats (i.e. scores `>1`), while the measures using polls as a denominator demonstrate that there are no big changes in the electoral landscape.
+
+```{r dv, topcaption=TRUE}
+library(kableExtra)
+source(here::here("src/lib/functions.R"))
+load(here("data/intermediate/cleaned_data.RData"))
+source(here("src/analysis/data-for-analyses.R"))
+source(here("src/analysis/descriptive-information-overview.R"))
+
+descr %>% 
+  filter(name != "group1", name != "group2", name != "group3") %>%
+  select(Variable = name, Mean = means, `St.Dev` = stdev, `Min. Value` = minvalue,
+         `Max. Value` = maxvalue) %>% 
+  kbl(booktabs =T, caption = "\\label{tab:descr}Descriptive Information of Variables under Study") %>%
+  kable_styling(latex_options = c("striped", "hold_position"),
+                full_width = F, fixed_thead = T, position = "center") %>%
+   column_spec(1, width = "6cm") %>%
+   column_spec(2, width = "1.5cm") %>%
+   column_spec(3, width = "1.5cm") %>%
+   column_spec(4, width = "1.5cm") %>%
+   column_spec(5, width = "1.5cm")
+```
+
+**Independent Variable: Ideological Extremity.** To investigate how ideological extremity interacts with the relation between parties' rhetorical strategies and the level of journalistic  intervention (H\ref{hyp:third}), we rely upon both _The Chapel Hill Expert Survey_ (CHES) [@ches] and the _Manifesto Project Database_ [@cmp].
+We calculate ideological extremity by calculating the parties' absolute deviation from the ideological center.
+The higher the deviation, the more extreme a party's ideology is.
+How to measure ideology is a debate deeply rooted in political science [e.g., see @molder2016validity; @mikhaylov2012coder; @benoit2012scale; @ecker2021and].
+Both expert surveys, such as CHES, as well as the Manifesto's Project's core-sentence approach have up- and downsides. 
+We therefore include measures coming from both.
+Moreover, how to calculate the ideological center is not straightforward.
+We therefore include both the mean and the median of the ideological spectrum.
+Lastly, the work of @somer2009timely suggest that parties also consider their ideological position of last elections when deciding on what to say. 
+Hence, we included measures of ideological extremity based on the previous rounds: the 2014 EU elections for the CHES data, and the 2012 national elections for the Manifesto Project data.
+These considerations result in eight measures of ideological extremity (see rows 15--22 in Table \ref{tab:descr}).
+First, we calculate ideological extremity based on the CHES 2017 left-right general 10-point scale measure [^12] using the mean value as the ideological center (`M = 2.19`, `St.Dev = 1.45`), and for our second measure we use the median value as the ideological center (`M = 2.20`, `St.Dev = 1.38`).
+Our third and fourth measure are similar to the first two, but based on the CHES 2014 data with means of respectively `1.87` (`St.Dev = 1.49`) and `1.88` (`St.Dev = 1.47`).
+Our fifth till eighth measures are based on the Manifesto Project. 
+We use the _rile-index_ [@volkens2013mapping], ranging from -100 to +100, to acquire the right-left positions of Dutch political parties in our sample.
+For the fifth and sixth measure, we subtract the parties position from the ideological center based on respectively the mean (`M = 15.33`, `St.Dev = 8.18`), and the median of the 2017 data (`M = 15.33`, `St.Dev = 9.29`).
+For the seventh and eight measure of ideological extremity, we use the 2012 data with means of respectively `12.27` (`St.Dev = 6.90`) and `11.88` (`St.Dev = 8.74`).
+For both the CHES and Manifesto Project data holds that the the means indicate that on average, there was more polarization -- i.e. higher mean values of absolute deviation from the center -- in the 2017 electoral landscape compared to 2014 and 2012.
+
+[^12]: This variable measures the position of the party in terms of its overall ideological stance.
+
+**Independent Variable: Issue Ownership.** To examine the conditioning role of issue ownership on the effect journalistic intervention on parties' rhetorical strategies (H\ref{hyp:fourth}), we use survey data from polling company Kieskompas (Election Compass) [@Krouwel2016]. 
+We measure two forms of issue ownership that are commonly found in the literature: associative issue ownership and competence issue ownership [@walgrave2012associative].
+We create one measure of associative issue ownership and three measures of competence issue ownership (see rows 23--26 in Table \ref{tab:descr}).
+First, we measured associative issue ownership with the question: '_Which issue comes to your mind when you think about <party>?_'
+For our measure of associative issue ownership, we take the summation over respondents to calculate the percentage of respondents who associate an issue with a party (`M = 0.05`, `St.Dev = 0.07`).
+Second, we measured competence issue ownership with the question: '_Do you agree or disagree with <party> on the issue you associated with the party?_'. 
+We take summation over the respondents to calculate percentages of competence issue ownership. 
+Negative figures imply that more people disagree with the position of the party than people have agreed with the position of the party.
+Subsequently, we create three different measures based on the summation over respondents: we take the mean as our first measure (`M = 0.10`, `St.Dev = 0.27`), the median as our second (`M = 0.13`, `St.Dev = 0.49`), and the standard deviation as our third (`M = 0.62`, `St.Dev = 0.57`). 
+
+## Method of Estimation
+We estimate four models, one with the direct effect of journalistic intervention (H\ref{hyp:first}, and three with interaction effects between journalistic intervention and standing in the polls (H\ref{hyp:second}), ideological extremity (H\ref{hyp:third}), and issue ownership (H\ref{hyp:fourth}).
+To estimate our models, we need to deal with variation between party observations (13 in total) as well as over time (28 days in total).
+In our online compendium, we show the structure of our data and conduct stationary
+tests.[^13]
+Estimating a simple regression on the pooled data could therefore lead to erroneous conclusions [@beck1995].
+We have to account for heteroskedastic error terms, since it is very likely that the error terms have different variances between panels and are also correlated across different panels. 
+Furthermore, it is likely that the observations of \# Negative Appeals (our dependent variable) are correlated across time within panels.
+Consequently, we estimate a Poisson generalized linear mixed model with a lagged dependent variable and fixed effects for parties, meaning that we look at within party effect.
+
+[^13]:(https://anonymous.4open.science/r/c2b8960a-17ee-4a76-a4c7-68f8bbc99b4c/) -- anonymized for the reviewing process.}
+
+Table \ref{tab:descr} demonstrates that we could construct several options to measure our theoretical constructs. 
+Choosing which ones or which combinations to include in the main analyses and robustness checks typically comes with _researchers' degrees of freedom_ [@simmons2011false].
+Therefore, our data does not consist of a single data set necessary to test our hypotheses, but _to multiple alternatively processed data sets, depending on the specific combination of choices—a many worlds or multiverse of data sets_ [@simonsohn2019specification, p.702].
+Each combination of independent variables can lead to different outcomes of the statistical model.
+Hence, rather than modeling some separate 'single data sets', we choose to model the multiverse of data sets [@simonsohn2019specification], also referred to as the specification curve [@steegen2016increasing].
+We use the R package `specr` [@masur2020specr] to estimate the effect of each different combination of independent variables to explain when parties make negative appeals. 
+Figures \ref{fig:test-h1}, \ref{fig:test-h2}, \ref{fig:test-h3}, and \ref{fig:test-h4} demonstrate the regression estimates and the `95%` confidence intervals for the concept tested in each hypothesis. 
+
+# Does Journalistic Intervention Influences Political Parties' Decision to Go Negative?
+
+```{r results-h1,out.width = "60%", fig.align = 'center', fig.cap = "\\label{fig:test-h1}Effect of Journalistic Intervention on \\# Negative Appeals (H1)", fig.subcap = "Note: Controlled for Standing in Polls, Ideological Extremity and Issue Ownership"}
+knitr::include_graphics(here::here("report/figures", "h1-1.png"))
+```
+
+How has parties' campaign rhetoric changed when acting in a high-choice media environment? 
+Do the seminal explanations of 'going negative' [e.g. see @nai2015negative; @walter2010negative; @haselmayer2019negative] still apply?
+Or, do the parties play when the journalists are away? 
+To answer these questions, we first look at the direct effect of journalistic intervention:
+Do parties make more negative appeals when levels of journalistic intervention increase?
+Figure \ref{fig:test-h1} demonstrates for 69 different model specifications the coefficient for journalistic intervention.
+For all of these models, the coefficients are positive and statistically significant.
+This indicates that we find quite robust effects for journalistic interventions: 
+The higher the levels of journalistic interventions, the more likely parties are to make negative appeals.
+This is in line with our expectation (H\ref{hyp:first}).
+Figure \ref{fig:test-h1} also demonstrates that it matters how one measures journalistic intervention. 
+Taking the daily average of appeals (in purple) or the daily sum (in green) matters in terms of effect sizes.
+Looking at the daily averages, the effect sizes range from 0.35 to 1.20 -- indicating that the effect size varies from one time the standard deviation to four times the standard deviation.
+Hence, quite a substantive effect. 
+Looking at the other two measures, the daily sum and the deviation from the daily average, we see that the effect sizes ranges are about 0.20.
+The measures have respective means of `1.25` and `1.10`, with standard deviations of `3.12` and `2.91`, indicating that the found effect size is minimal.
+
+```{r results-h2,out.width = "80%", fig.align = 'center', fig.cap = "\\label{fig:test-h2}Effect of Standing in the Polls on \\# Negative Appeals (H2)", fig.subcap = "Note: Controlled for Ideological Extremity and Issue Ownership"}
+knitr::include_graphics(here::here("report/figures", "h2-1.png"))
+```
+
+Second, we hypothesized that more journalistic intervention on a communication channel leads to more negative appeals made by political parties facing negative prospects in the polls (H\ref{hyp:second}). 
+Figure \ref{fig:test-h2} shows the specification curve for the effect
+of parties' standing in the polls on the amount of negative appeals across levels of journalistic intervention (columns of the panels) and measures of journalistic intervention (rows of the panels).
+For each measure of journalistic intervention (Daily Average, Daily Sum, and Deviation for Daily Average), we run 504 models.
+The upper-panel of Figure \ref{fig:test-h2} demonstrates in the specifications in which the `p`-value is smaller than `0.05` -- i.e. statistically significant, the lower panel shows the statistically insignificant values (`p`-value `> 0.05`).
+Twenty-four percent of the specifications (273 models) yield statistically significant results. 
+Zooming into the upper-panel of Figure \ref{fig:test-h2}, we show that a) how you measure electoral prospects based on polling data measures, and b) that these measures give different statistical significant results based on the type of data -- i.e. the level of journalistic intervention -- one uses. 
+When journalistic intervention is absent (upper-left), specifications using measures of standing in the polls relative to respectively the current number of seats, the rolling mean of polls, and the first lag (i.e. row 6, 10, and 12 in Table \ref{tab:descr}) -- irregardless of controlling for various measures of issue ownership and ideological extremity -- yield statistically significant results.
+The coefficients are negative, and range between `-0.2` and `-0.54`.
+This indicates that facing better electoral prospects leads to less negative appeals on the party's Facebook channel.
+The respective means of `1.59`, `0.94`, and `0.96`, with standard deviations of `1.27`, `0.29` and `0.36`, indicating that the found effect size is minimal for the measure relative to the current seats, but relatively sizable for the other two measures.
+When there is moderate journalistic intervention (upper-middle panel), different measures of standing in the polls elicit statistically significant results.
+For the measures of polls relative to the weekly average or last weeks polls relative to the rolling mean (i.e. row 11 and 14 in Table \ref{tab:descr}), we find negative significant coefficients, ranging from `-0.5` to `2`, which are relative to their respective means and standard deviations sizeable effects.
+Yet, when standing in the polls is measured as the weekly average of the polls relative to the current number of seats (i.e. row 8 in Table \ref{tab:descr}) the effects are positive and significant.
+So, when parties are doing well in the polls, our models predict that parties make both more and less negative appeals on TV-shows.
+For high levels of journalistic intervention (upper-right panel), we again see both positive and negative statistically significant effects.
+Measuring standing in the polls relative to a party's seats (i.e. row 6 in Table \ref{tab:descr}), we find positive, yet substantively small, statistically significant effects.
+At the same time, when we measure standing in the polls based on last weeks polls relative to the rolling mean (i.e. row 14 in Table \ref{tab:descr}), we show sizeable negative statistically significant results.
+Thus, when parties are doing well in the polls, our models predict that parties make both more and less negative appeals in news articles.
+These findings illustrate the importance of showing several model specifications, because some specifications would allow us to conclude support for our second hypothesis, while others do not.
+Given that for `76%` of the models, we do not find statistically significant results, and because the evidence that is statistically significant is also not uniformly in the hypothesized direction, we conclude that  we do not find support for our second hypothesis [similar to @walter2014stakes].
+Yet,  Figure \ref{fig:test-h2} demonstrates important findings for the field regarding measuring standing in the polls.
+
+```{r results-h3,out.width = "60%", fig.align = 'center', fig.cap = "\\label{fig:test-h3}Effect of Ideological Extremity on \\# Negative Appeals (H3)", fig.subcap = "Note: Controlled for Standing in Polls and Issue Ownership"}
+knitr::include_graphics(here::here("report/figures", "h3-1.png"))
+```
+
+Third, we hypothesized that the fewer journalistic intervention on a communication channel, the more negative appeals are made by political parties with extreme ideological positions (H\ref{hyp:third}. 
+Figure \ref{fig:test-h3} shows the specification curve for the effect of ideological extremity on the amount of negative appeals across levels of journalistic intervention (columns) and measures of journalistic intervention (rows). 
+We ran 480 models per measure of journalistic intervention.
+The upper-panel of Figure \ref{fig:test-h3} shows the specifications that elicit statistically significant results:
+Only 81 out of 1440 models (`8%`).
+Regardless of the model specification, none of the 480 models show statistically significant results when journalistic intervention is absent.
+The upper-two panels of Figure \ref{fig:test-h3} shows that for most of the specifications measuring ideological extremity based on the deviation from the median in 2017 in manifesto data yield statistically significant negative results for both moderate and high levels of journalistic intervention, meaning that the more ideological extreme parties are, the fewer negative appeals these parties make on TV-shows and news articles. 
+This finding is the result of selection: The more ideological extreme parties in the Dutch 2017 elections where often smaller parties that typically receive less media attention by both TV and news papers.
+At the same time, also for the concept of ideological extremity our results show that the model specification matters.
+When we measure ideological extremity based on the mean of last elections (2012) using manifesto data, we show statistically significant positive results for moderate levels of journalistic intervention.
+Using the mean based on the election manifesto's of 2017, we show statistically significant negative effects for high levels of journalistic intervention.
+Thus, Figure \ref{fig:test-h3} demonstrates that when predicting the conditions under which parties decide 'to go negative' the results hinge upon which communication channel scholars investigate -- we demonstrate statistically significant effects for TV-shows and news paper articles -- and how one operationalizes ideological extremity.
+Nevertheless, Figure \ref{fig:test-h3} consistently shows no evidence for our third hypothesis that ideologically more extreme parties make more negative appeals on communication channels with lower levels of journalistic intervention. 
+
+```{r results-h4,out.width = "60%", fig.align = 'center', fig.cap = "\\label{fig:test-h4}Effect of Issue Ownership on \\# Negative Appeals (H4)", fig.subcap = "Note: Controlled for Standing in Polls and Ideological Extremity"}
+knitr::include_graphics(here::here("report/figures", "h4-1.png"))
+```
+
+Lastly, we hypothesized that the fewer journalistic intervention on a communication channel, the fewer negative appeals are made by political parties on issues they own (H\ref{hyp:fourth}).
+Figure \ref{fig:test-h4} shows the specification curve for the effect of issue ownership on the amount of negative appeals across levels of journalistic intervention (columns) and measures of journalistic intervention (rows). 
+We ran 168 models per measure of journalistic intervention.  
+Fifty-five percent of these specifications (279 models) yield statistically significant results.
+These are visualized in the upper-panel of Figure \ref{fig:test-h4}.
+The upper-left panel shows that regardless of the specification, there is a statistical significant positive effect of issue ownership on the amount of negative appeals parties make on communication channels without journalistic intervention.
+This indicates that if parties are issue owner -- either measured using the competence or associative dimension -- they are more likely to make negative appeals on their Facebook page.
+This is contrary to our expectations.
+The effect is stronger for the associative dimension than for the competence dimension.
+For the other two levels of journalistic intervention (i.e. moderate and high), Figure \ref{fig:test-h4} demonstrate that the different specifications matter.
+For moderate levels of journalistic intervention, specifications where issue ownership is measured using the median of the competence issue ownership dimension only yield statistically significant positive effects when controlling for some measures of ideological extremity -- i.e. when this is measured using the CHES data or the 2012 manifesto's.
+For specifications measuring issue ownership with the mean of the competence issue ownership dimension, this elicits statistically significant positive effects when controlling for all measures of ideological extremity and some measures of polling data -- i.e. using all forms of calculating standing in the polls relative to the current number of seats.
+For high levels of journalistic intervention in the upper-right panel, we only see statistically significant negative effects.
+This indicates that if a party is an issue owner, they are less likely to make negative appeals in news papers.
+We see these effects when we measure issue ownership using the associative dimension and the competence dimension using the mean.
+For the associative dimension, the effects are also substantively meaningful.
+Hence, we see again that measurement matters for the substantive outcomes.
+For our hypothesis (H\ref{hyp:fourth}), however, we do not find suffient support.
+All in all, we find very minimal evidence that the _preaching to the choir or converting the flock_ logic applies in the 2017 Dutch campaign.
+On the one hand, parties do employ a more positive rhetoric when communicating with their core supporters (i.e. Facebook versus talk shows or newspaper coverage) which implies that self-promotion is more common when 'preaching to the choir'.
+On the other hand, contrary to our expectation, our results also suggest that political parties do not strategically promote themselves by emphasizing the issues on which they have a credibility advantage [@sides2006origins].
+
+# Discussion
+The media landscape has changed over the last decades [@van2017political]: The number of communication channels have increased drastically.
+This rise has given political parties ample new campaigning options [@kruikemeier2018understanding; @kruikemeier2014political]. 
+Yet, when scholars study parties' rhetorical strategies, they typically include only one type of communication channel. 
+At the same time, recent research [e.g. @ernst2019populists; @ballard2016campaigning] suggest that political actors bear in mind the level of control they have over their message -- i.e. the level of journalistic intervention [@paletz2002media].
+This indicates that parties craft their rhetorical strategy based on the outlet.
+We address the question of _how parties weigh their rhetorical strategies across communication channels_ leveraging a unique data set of the Dutch 2017 elections.
+This enables us to test the existing predictors of making negative appeals across various communication channels.
+Moreover, using multiverse approach, we employ an exceptional design to give insights into the robustness of measurements of common predictors.  
+
+In general, negative campaigning does not seem to be the chief rhetorical strategy for most Dutch parties -- which is a similar finding as previous studies of multiparty systems [@walter2014stakes, @elmelund2011issue].
+Nevertheless, we show that political actors do pursue different rhetorical strategies in a high-choice media environment.
+In general, parties make more use of negative rhetoric on communication channels with high levels of journalistic intervention.
+We bring to the fore that our theoretical explanations of party behavior are dependent on the communication channel they use. 
+Recently, scholars have already shown that parties parties consider the width of their audience by using perss releases to reach the masses [e.g., see @van2018living; @meyer2020gets] or micro-targeting techniques for specific groups [e.g., see @endres2018does; @dobber2017two].
+Moreover, @boukes2016politician suggested earlier that the competitive format of talk shows invite more combative rhetoric, of which going negative is one manifestation.
+Our analysis also shows that the 'cat's presence makes the mice play'. 
+That is, we demonstrate that next to the parties' agency to decide whether or not to go negative towards an adversarial party, the journalistic format intervenes. 
+Yet, most scholars studying parties' strategic rhetoric either look at unmediated sources [e.g. @bernardi2019does], or only consider one communication platform [for similar critique, see @walter2010negative].
+Our results highlight that to fully understand _when and why_ parties choose a particular rhetorical strategy, one should understand the interaction between journalistic and party agency.
+Thereby, we touch upon the question if it is really parties' social media engagement that drives these negative rhetoric during campaign times.
+We find the opposite: The news value _negativity- [@harcup2017news] seems to play a bigger role than parties' own agency.
+We argue therefore that we should better understand the journalistic choices of reporting on politics [for an excellent example hereof, see @helfer2016makes].
+
+Moreover, our results indicate, especially when looking at the common determinants of `going negative' [for a recent overview, see @nai2020negative], that there is a real need for multi-platform studies when looking at the determinants of parties' rhetoric. 
+A common one from the negative campaigning literature [@nai2020negative] is the electoral prospects parties face: Doing poorly in the polls lowers the threshold to go negative [@lau2009negative; @nai2020negative; @elmelund2011issue].
+When we look at different levels of journalistic intervention by exploring how this common finding holds for Facebook posts, TV shows and newspaper coverage, we present that there is a negative relationship between standing in the polls and making negative appeals.
+That is, the better electoral prospects a party faces, the fewer negative appeal one makes. 
+We also show that this effect is stronger the more journalistic control there is over a communication channel.
+While this is in line with the existing literature and therefore our second hypothesis, we do show that these results are very much dependent on the choice of measurement of standing in the polls as well as on the choice of media channel.
+For different communication channels, different measures of standing in the polls yield statistically significant results.
+In only 24% of our models the results support the second hypothesis.
+We show the same for the third hypothesis, where we investigate the effect of ideological extremity on going negative on various levels of journalistic intervention.
+While we do show that on channels with more journalistic intervention, ideologically extreme parties are less likely to make negative appeals [similar to e.g. @walter2014stakes; @elmelund2011issue], it is only for a very low number of model specifications.
+Again, as illustrated in Figure \ref{fig:test-h3}, we show how important it is to test the determinants of going negative over various measurements and various communication channels.
+Also, this finding sheds light on how important it is to understand the journalistic process: 
+Often ideologically extreme parties are smaller parties, and hence get less media attention.
+A third important determinant of going negative is issue ownership [@elmelund2011issue; @kleinnijenhuis2020televised; @nai2020negative].
+In contrary to the literature -- and against our fourth hypothesis -- we show that parties make more negative appeals on issues they own.
+Particularly, they do so on communication channels where journalistic intervention is absent.
+Hence, parties are more likely to go negative on issues they own on Facebook.
+The opposite is true for high intervention channels: In news coverage it is less likely that a party goes negative on an issue they own.
+With only about half of our models (55%) gave positive results, we cannot state to have found robust evidence for our hypothesis. 
+Again, we do show that measurement and communication channel matter.
+
+In addition to our theoretical contributions, we also make an important methodological contribution to the literature. Conducting multiverse analyses enabled us to get a clear picture of how our data processing choices affected the statistical outcomes of our analyses [@steegen2016increasing]. Not only does this increase the robustness of our own findings, but it also has important implications for the field of communication and political science where many such data processing choices exist. Our study offers several compelling examples of how seemingly arbitrary choices in variable construction can lead to different effect sizes and statistical outcomes.
+First, we see this evidenced in our measure of journalistic intervention. Although it is robust against different measures, we find that the effect is stronger if we take the daily average instead of the daily sum or deviation from the daily average.
+Second, most of our measures of standing in the polls show no significant effect, but some measures show a negative significant or positive borderline significant effect. In other words: dependent on the measure we would have used in a single analysis, there could have been a scenario where we would have found a negative effect and a scenario where we would have found a positive effect.
+
+# References
+\singlespacing
+

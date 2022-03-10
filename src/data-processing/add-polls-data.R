@@ -4,7 +4,7 @@ polls <- "https://nl.wikipedia.org/wiki/Tweede_Kamerverkiezingen_2017/Peilingen#
   html_table(fill = T) 
 
 polls <- do.call(rbind.data.frame, polls) %>%
-  tibble() %>%
+  tibble()
   filter(Datum > "14 februari 2017") %>%
   mutate(Datum = recode(Datum,
                         `14 maart 2017` = "14-03-2017",

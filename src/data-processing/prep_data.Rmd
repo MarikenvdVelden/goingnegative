@@ -102,7 +102,7 @@ save(d, file = here("data/intermediate/cleaned_data.RData"))
 
 ## Visualization of Data
 
-```{r "Overview of Appeals per Medium", echo=F, message=FALSE, warning=FALSE, fig.width=6, fig.height=8}
+```{r "overview", echo=F, message=FALSE, warning=FALSE, fig.width=6, fig.height=8}
 d %>%
   select(party, source, medium,direction_appeal) %>%
   group_by(party) %>% mutate(n = n()) %>%
